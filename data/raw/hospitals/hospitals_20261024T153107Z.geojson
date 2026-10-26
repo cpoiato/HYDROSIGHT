@@ -1,0 +1,160 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": 167697,
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.132190876209,
+          51.0641896775293
+        ]
+      },
+      "properties": {
+        "OBJECTID": 167697,
+        "TYPE": "Hospital",
+        "NAME": "Foothills Hospital",
+        "ADDRESS": "1403 - 29 ST NW",
+        "HOMEPAGE": null,
+        "EMAIL": null,
+        "INFO": "(403)944-1110",
+        "SOURCE": null,
+        "SOURCE_EMAIL": null,
+        "X": -9264.7554,
+        "Y": 5658668.393,
+        "COMM_CODE": "STA",
+        "GLOBALID": "d213075a-b19a-4dac-a5b5-2b6198ade834",
+        "CREATED_DT": null,
+        "MODIFIED_DT": null,
+        "MODIFIED_ACTION": null,
+        "GLOBALID_GUID": null,
+        "COMMENTS": null
+      }
+    },
+    {
+      "type": "Feature",
+      "id": 167711,
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.951717994056,
+          50.8821085996436
+        ]
+      },
+      "properties": {
+        "OBJECTID": 167711,
+        "TYPE": "Hospital",
+        "NAME": "South Health Campus",
+        "ADDRESS": "4448 FRONT ST SE",
+        "HOMEPAGE": null,
+        "EMAIL": null,
+        "INFO": "(403)956-1111",
+        "SOURCE": null,
+        "SOURCE_EMAIL": null,
+        "X": 3398.525,
+        "Y": 5638407.104,
+        "COMM_CODE": "SET",
+        "GLOBALID": "c8b625b6-4d59-4789-9065-0451b23129c3",
+        "CREATED_DT": 1349948449000,
+        "MODIFIED_DT": 1349948622000,
+        "MODIFIED_ACTION": "MODIFIED ATTRIBUTE",
+        "GLOBALID_GUID": null,
+        "COMMENTS": null
+      }
+    },
+    {
+      "type": "Feature",
+      "id": 167726,
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.096334942823,
+          50.9918356276606
+        ]
+      },
+      "properties": {
+        "OBJECTID": 167726,
+        "TYPE": "Hospital",
+        "NAME": "Rockyview General Hospital",
+        "ADDRESS": "7007 - 14 ST SW",
+        "HOMEPAGE": null,
+        "EMAIL": null,
+        "INFO": "(403)943-3000",
+        "SOURCE": null,
+        "SOURCE_EMAIL": null,
+        "X": -6762,
+        "Y": 5650616,
+        "COMM_CODE": "EAG",
+        "GLOBALID": "d10bf447-b028-4815-a703-d7c5f6fb118b",
+        "CREATED_DT": null,
+        "MODIFIED_DT": null,
+        "MODIFIED_ACTION": null,
+        "GLOBALID_GUID": null,
+        "COMMENTS": null
+      }
+    },
+    {
+      "type": "Feature",
+      "id": 167750,
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.983957758351,
+          51.0790231074503
+        ]
+      },
+      "properties": {
+        "OBJECTID": 167750,
+        "TYPE": "Hospital",
+        "NAME": "Peter Lougheed Medical Centre",
+        "ADDRESS": "3500 - 26 AV NE",
+        "HOMEPAGE": null,
+        "EMAIL": null,
+        "INFO": "(403)943-4555",
+        "SOURCE": null,
+        "SOURCE_EMAIL": null,
+        "X": 1125.1000000000001,
+        "Y": 5660310.25,
+        "COMM_CODE": "SUN",
+        "GLOBALID": "d212fbbe-7eeb-4df2-a5e5-15d97bd57ea3",
+        "CREATED_DT": null,
+        "MODIFIED_DT": null,
+        "MODIFIED_ACTION": null,
+        "GLOBALID_GUID": null,
+        "COMMENTS": null
+      }
+    },
+    {
+      "type": "Feature",
+      "id": 167800,
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.147971893319,
+          51.0745666196738
+        ]
+      },
+      "properties": {
+        "OBJECTID": 167800,
+        "TYPE": "Hospital",
+        "NAME": "Alberta Children's Hospital",
+        "ADDRESS": "2888 Shaganappi Trail NW",
+        "HOMEPAGE": null,
+        "EMAIL": null,
+        "INFO": "(403)955-7211",
+        "SOURCE": null,
+        "SOURCE_EMAIL": null,
+        "X": -10368.5865,
+        "Y": 5659824.811,
+        "COMM_CODE": "UOC",
+        "GLOBALID": "72744da4-4516-478a-80e8-b7c50042a0dd",
+        "CREATED_DT": null,
+        "MODIFIED_DT": 1461599783000,
+        "MODIFIED_ACTION": "MODIFIED ATTRIBUTE",
+        "GLOBALID_GUID": null,
+        "COMMENTS": null
+      }
+    }
+  ]
+}

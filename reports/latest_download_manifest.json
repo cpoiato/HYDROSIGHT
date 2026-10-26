@@ -1,0 +1,351 @@
+{
+  "run_utc": "2026-10-24T15:31:07.814255+00:00",
+  "snapshot": "20261024T153107Z",
+  "project": "HydroSight",
+  "sources": {
+    "water_breaks": {
+      "status": "OK",
+      "filename": "data/raw/water_breaks/water_main_breaks_20261024T153107Z.jsonl",
+      "records": 37555,
+      "sha256": "eecfadb2814456aad70922d058c08610869b01118bbdf0304dd5142830b0baa0",
+      "bytes": 5321975,
+      "source": "https://data.calgary.ca/resource/dpcu-jr23.json",
+      "snapshot_utc": "20261024T153107Z",
+      "note": "Snapshot of current published records, not proof of historic availability"
+    },
+    "pipes": {
+      "status": "OK",
+      "filename": "data/raw/pipes/public_water_mains_20261024T153107Z.jsonl",
+      "records": 60740,
+      "sha256": "5811f0c8c308b87a4e1e36bfc170473ab1d62ff37dc16834f0df96fc02a82967",
+      "bytes": 20636423,
+      "source": "https://data.calgary.ca/resource/w6h9-w33i.json",
+      "snapshot_utc": "20261024T153107Z",
+      "note": "Snapshot of current published records, not proof of historic availability"
+    },
+    "hospitals": {
+      "status": "OK",
+      "filename": "data/raw/hospitals/hospitals_20261024T153107Z.geojson",
+      "records": 5,
+      "sha256": "428023f72528d1c461b70470efe5601eacceace8d2f9f412ca7e47b3ae65c208",
+      "bytes": 4078,
+      "source": "https://services1.arcgis.com/AVP60cs0Q9PEA8rH/ArcGIS/rest/services/Hospital/FeatureServer/0",
+      "invalid_geometries": 0,
+      "note": "Current facility locations only, excluded from historical ML features"
+    },
+    "schools": {
+      "status": "OK",
+      "filename": "data/raw/schools/schools_20261024T153107Z.geojson",
+      "records": 506,
+      "sha256": "dffd74a3e43d08e437777774de5ea1c48ab72a37c375e509ef0db45758575c74",
+      "bytes": 466699,
+      "source": "https://services1.arcgis.com/AVP60cs0Q9PEA8rH/ArcGIS/rest/services/School/FeatureServer/0",
+      "invalid_geometries": 0,
+      "note": "Current facility locations only, excluded from historical ML features"
+    },
+    "weather": {
+      "status": "OK",
+      "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+      "station_id": 50430,
+      "records": 6209,
+      "annual_files": [
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_50430_2010_20261024T153107Z.csv",
+          "records": 365,
+          "sha256": "f4bb41df546f5a26988e89ae6862c1df13afbcfd2f85e31d48d5ef04fd4dde75",
+          "bytes": 53474,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 50430,
+          "year": 2010
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_50430_2011_20261024T153107Z.csv",
+          "records": 365,
+          "sha256": "cd6e55e276c77649bdeabd56a4364d5adf741142e0d16c88ca5387a97dfd8993",
+          "bytes": 53474,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 50430,
+          "year": 2011
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_50430_2012_20261024T153107Z.csv",
+          "records": 366,
+          "sha256": "9f517a207ba2d1b7f8f6590e3db2ffcf25c6c863d1c13be4571bd40cc4ed481b",
+          "bytes": 58168,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 50430,
+          "year": 2012
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_50430_2013_20261024T153107Z.csv",
+          "records": 365,
+          "sha256": "138850e589aae04d4f3b93abcc4a6a030573d323472a2009f43ec32367a4ab6e",
+          "bytes": 63159,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 50430,
+          "year": 2013
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_50430_2014_20261024T153107Z.csv",
+          "records": 365,
+          "sha256": "0702360c78a6565228230516ec7c9ad5c4a06842754a0a1b3a9fd22821ebf58b",
+          "bytes": 65022,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 50430,
+          "year": 2014
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_50430_2015_20261024T153107Z.csv",
+          "records": 365,
+          "sha256": "be48cce67751a16ca41e248d524d0f1d4257cf7f89f620e91c027825579c0d23",
+          "bytes": 64855,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 50430,
+          "year": 2015
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_50430_2016_20261024T153107Z.csv",
+          "records": 366,
+          "sha256": "5ff19e52ccdbcc1e4afaac1af49cb169c2eed23fce3ae61a691a1fba6ebdc093",
+          "bytes": 64993,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 50430,
+          "year": 2016
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_50430_2017_20261024T153107Z.csv",
+          "records": 365,
+          "sha256": "ca8b34236cd32fe88d9187816fd753ee76d28e3c92879daa5bc8e2c8573bb6a7",
+          "bytes": 64813,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 50430,
+          "year": 2017
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_50430_2018_20261024T153107Z.csv",
+          "records": 365,
+          "sha256": "c66b7087c522f1734d357c84ed4db87b8076d4a5851914d56298264fc5b245a8",
+          "bytes": 64903,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 50430,
+          "year": 2018
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_50430_2019_20261024T153107Z.csv",
+          "records": 365,
+          "sha256": "dc9dc71ec6614b9b7f535196076cb5be2d0c5ec5aec33171a0aa7dac03bbd235",
+          "bytes": 64727,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 50430,
+          "year": 2019
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_50430_2020_20261024T153107Z.csv",
+          "records": 366,
+          "sha256": "bb4b77781603529f8ee1050671b56fefd54aa6f191d5cea03ca7e9d58979df92",
+          "bytes": 64950,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 50430,
+          "year": 2020
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_50430_2021_20261024T153107Z.csv",
+          "records": 365,
+          "sha256": "da8325cc7fb957b0147c8031cbd59ac50ae825135ffcd6cb22720f6cf62003b2",
+          "bytes": 64715,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 50430,
+          "year": 2021
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_50430_2022_20261024T153107Z.csv",
+          "records": 365,
+          "sha256": "7b5857c67b1f662ee1abadd07f65b8927e38b802e9f09783bf87e98a035ab9ef",
+          "bytes": 64725,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 50430,
+          "year": 2022
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_50430_2023_20261024T153107Z.csv",
+          "records": 365,
+          "sha256": "46467cdf6f00f238a8518740619478f3e0a2f3632b2e6b1e2ccbb8498b5878b1",
+          "bytes": 64831,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 50430,
+          "year": 2023
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_50430_2024_20261024T153107Z.csv",
+          "records": 366,
+          "sha256": "0b759e5942465a247af88b622e1acb1788c235db84d49b4618bbd28f06964171",
+          "bytes": 65000,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 50430,
+          "year": 2024
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_50430_2025_20261024T153107Z.csv",
+          "records": 365,
+          "sha256": "c5941270360b131ee6cb0b9890bb980ef29ff8f09ad2599e209e66a9cf0a2e31",
+          "bytes": 64851,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 50430,
+          "year": 2025
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_50430_2026_20261024T153107Z.csv",
+          "records": 365,
+          "sha256": "0305ed5a571e4306d45dba8c328f7ea6a722bcb76d059be40549f06e3d7eefeb",
+          "bytes": 62480,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 50430,
+          "year": 2026
+        }
+      ],
+      "combined_file": "data/raw/weather/daily_weather_calgary_2010_2026_20261024T153107Z.csv",
+      "annual_coverage": {
+        "2010": {
+          "days": 365,
+          "min_temp_days": 0,
+          "max_temp_days": 0,
+          "precip_days": 0,
+          "snow_days": 0
+        },
+        "2011": {
+          "days": 365,
+          "min_temp_days": 0,
+          "max_temp_days": 0,
+          "precip_days": 0,
+          "snow_days": 0
+        },
+        "2012": {
+          "days": 366,
+          "min_temp_days": 144,
+          "max_temp_days": 144,
+          "precip_days": 143,
+          "snow_days": 143
+        },
+        "2013": {
+          "days": 365,
+          "min_temp_days": 306,
+          "max_temp_days": 305,
+          "precip_days": 305,
+          "snow_days": 303
+        },
+        "2014": {
+          "days": 365,
+          "min_temp_days": 365,
+          "max_temp_days": 365,
+          "precip_days": 359,
+          "snow_days": 363
+        },
+        "2015": {
+          "days": 365,
+          "min_temp_days": 365,
+          "max_temp_days": 365,
+          "precip_days": 360,
+          "snow_days": 364
+        },
+        "2016": {
+          "days": 366,
+          "min_temp_days": 365,
+          "max_temp_days": 365,
+          "precip_days": 363,
+          "snow_days": 360
+        },
+        "2017": {
+          "days": 365,
+          "min_temp_days": 350,
+          "max_temp_days": 362,
+          "precip_days": 363,
+          "snow_days": 361
+        },
+        "2018": {
+          "days": 365,
+          "min_temp_days": 356,
+          "max_temp_days": 363,
+          "precip_days": 364,
+          "snow_days": 361
+        },
+        "2019": {
+          "days": 365,
+          "min_temp_days": 358,
+          "max_temp_days": 358,
+          "precip_days": 363,
+          "snow_days": 341
+        },
+        "2020": {
+          "days": 366,
+          "min_temp_days": 358,
+          "max_temp_days": 358,
+          "precip_days": 365,
+          "snow_days": 349
+        },
+        "2021": {
+          "days": 365,
+          "min_temp_days": 350,
+          "max_temp_days": 350,
+          "precip_days": 363,
+          "snow_days": 362
+        },
+        "2022": {
+          "days": 365,
+          "min_temp_days": 348,
+          "max_temp_days": 348,
+          "precip_days": 361,
+          "snow_days": 361
+        },
+        "2023": {
+          "days": 365,
+          "min_temp_days": 363,
+          "max_temp_days": 363,
+          "precip_days": 365,
+          "snow_days": 365
+        },
+        "2024": {
+          "days": 366,
+          "min_temp_days": 357,
+          "max_temp_days": 357,
+          "precip_days": 366,
+          "snow_days": 364
+        },
+        "2025": {
+          "days": 365,
+          "min_temp_days": 358,
+          "max_temp_days": 358,
+          "precip_days": 362,
+          "snow_days": 362
+        },
+        "2026": {
+          "days": 365,
+          "min_temp_days": 280,
+          "max_temp_days": 280,
+          "precip_days": 294,
+          "snow_days": 293
+        }
+      },
+      "failed_years": {},
+      "note": "Observed climate from the forecast horizon must NEVER be used as predictor"
+    }
+  },
+  "errors": {},
+  "caution": "Data collection does not certify absence of temporal leakage or future update cadence."
+}

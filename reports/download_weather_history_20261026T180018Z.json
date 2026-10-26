@@ -1,0 +1,872 @@
+{
+  "run_utc": "2026-10-26T18:00:18.486046+00:00",
+  "snapshot": "20261026T180018Z",
+  "project": "HydroSight",
+  "sources": {
+    "weather_history": {
+      "status": "OK",
+      "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+      "station_id": 2205,
+      "records": 18263,
+      "annual_files": [
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_2205_1960_20261026T180018Z.csv",
+          "records": 366,
+          "sha256": "30574454b60062bfc8e0ba3c780dfd96e7c2ca47c47b18badf867854fec7b8c7",
+          "bytes": 65852,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 2205,
+          "year": 1960
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_2205_1961_20261026T180018Z.csv",
+          "records": 365,
+          "sha256": "249e6b3439f879365aeeaee248cd790716e31c9a9fdc2ad9ee0ca26fadc8cfd6",
+          "bytes": 65748,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 2205,
+          "year": 1961
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_2205_1962_20261026T180018Z.csv",
+          "records": 365,
+          "sha256": "d3ab15d8d07198a18bfa7f6b409f17f52b45fbb7975e166cdda9a24397e87259",
+          "bytes": 65702,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 2205,
+          "year": 1962
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_2205_1963_20261026T180018Z.csv",
+          "records": 365,
+          "sha256": "6cb2ccb7a203e2cb3e7901a145809fa21913983237a9b344c1072fd7cf772e81",
+          "bytes": 65702,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 2205,
+          "year": 1963
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_2205_1964_20261026T180018Z.csv",
+          "records": 366,
+          "sha256": "0c6354c11b2d1410f91edf3df0a4cd26db70f5d3774bc0609172351678a7b6f3",
+          "bytes": 65912,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 2205,
+          "year": 1964
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_2205_1965_20261026T180018Z.csv",
+          "records": 365,
+          "sha256": "3eae590f4b3caaba48007f94853a1df0f3b99f3f74c4467fd12caa8ffaf7e0be",
+          "bytes": 65804,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 2205,
+          "year": 1965
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_2205_1966_20261026T180018Z.csv",
+          "records": 365,
+          "sha256": "f4b7448158b4b7614dc1a08a023c5b29d377477ccd04cf6fa00aa7a40ba67e5e",
+          "bytes": 65805,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 2205,
+          "year": 1966
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_2205_1967_20261026T180018Z.csv",
+          "records": 365,
+          "sha256": "5dbca3c5a5e52bebfc2ffe8126268e5ffb9e589543cbf78a0e24c052288cdf80",
+          "bytes": 65729,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 2205,
+          "year": 1967
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_2205_1968_20261026T180018Z.csv",
+          "records": 366,
+          "sha256": "ed8cdc3e50c351fb18bcc959e0be333b98891530ccc39fa812b9c18f4c771cfd",
+          "bytes": 65897,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 2205,
+          "year": 1968
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_2205_1969_20261026T180018Z.csv",
+          "records": 365,
+          "sha256": "b38dc535931a492decd4235441d49ae7e8b3909e5bdcd6ab09552d7aeb7bb0d6",
+          "bytes": 65719,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 2205,
+          "year": 1969
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_2205_1970_20261026T180018Z.csv",
+          "records": 365,
+          "sha256": "0793982bc0fa70c6132b8b5d6a4c97f309808b12736b12c9c63e80f4bb456c43",
+          "bytes": 65686,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 2205,
+          "year": 1970
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_2205_1971_20261026T180018Z.csv",
+          "records": 365,
+          "sha256": "1921c71f0e79c8656d8dea39ea771b5b9f612ca11c4c6e444f4e0b6c2e83d7e8",
+          "bytes": 65777,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 2205,
+          "year": 1971
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_2205_1972_20261026T180018Z.csv",
+          "records": 366,
+          "sha256": "ddc969bd2dc05b32e41bbdf18e5127ddd9e412d6539d9692868b64945f633cb8",
+          "bytes": 65970,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 2205,
+          "year": 1972
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_2205_1973_20261026T180018Z.csv",
+          "records": 365,
+          "sha256": "79a644363fa2feabf8eb22ae1c6249500023e0bee776169e07e2cead349d6909",
+          "bytes": 65704,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 2205,
+          "year": 1973
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_2205_1974_20261026T180018Z.csv",
+          "records": 365,
+          "sha256": "a80732b52decb0c40709fb9c12db0fdd75ab96a9b8f62820bac85a5fc325ac65",
+          "bytes": 65609,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 2205,
+          "year": 1974
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_2205_1975_20261026T180018Z.csv",
+          "records": 365,
+          "sha256": "ca33975c08ebed4d0727c4ba7c15a40f7558d9802dc41002786fdbdbc81db338",
+          "bytes": 65673,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 2205,
+          "year": 1975
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_2205_1976_20261026T180018Z.csv",
+          "records": 366,
+          "sha256": "f9be1670e4cfd6d941b52099ac1894709602c46db2602b96031a30e30899c212",
+          "bytes": 65702,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 2205,
+          "year": 1976
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_2205_1977_20261026T180018Z.csv",
+          "records": 365,
+          "sha256": "c9405a22a673e38ba191b7b5accca448034eb2517edaf78cc9dda4febb912256",
+          "bytes": 65547,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 2205,
+          "year": 1977
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_2205_1978_20261026T180018Z.csv",
+          "records": 365,
+          "sha256": "883e2be86651ba5c8a5a5fb4f7722606f6cb616f6b2b109eebb0632d5d6d48bc",
+          "bytes": 65724,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 2205,
+          "year": 1978
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_2205_1979_20261026T180018Z.csv",
+          "records": 365,
+          "sha256": "85066b4a6c0a7f922371166d607d50012ce676e69fc9b94c7e5ae78898afcfe6",
+          "bytes": 65647,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 2205,
+          "year": 1979
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_2205_1980_20261026T180018Z.csv",
+          "records": 366,
+          "sha256": "1496bea97220a76d0d86c9526e9a65ef69dbd1a3a15015afb32700bcfecbb6d1",
+          "bytes": 65721,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 2205,
+          "year": 1980
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_2205_1981_20261026T180018Z.csv",
+          "records": 365,
+          "sha256": "4481db6170a3bc513bfb42239152e982d1ec1730f52b2bd90ef479bc5c07dfaa",
+          "bytes": 65447,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 2205,
+          "year": 1981
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_2205_1982_20261026T180018Z.csv",
+          "records": 365,
+          "sha256": "01a2a2691d4994a0d4b1adbb29614875ed08e4327a7dd9d9a28a679ba780e05b",
+          "bytes": 65747,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 2205,
+          "year": 1982
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_2205_1983_20261026T180018Z.csv",
+          "records": 365,
+          "sha256": "1ddcdd3d8902031a544c54c311f6562382e88613639ebfcfa50abc4501e86e46",
+          "bytes": 65617,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 2205,
+          "year": 1983
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_2205_1984_20261026T180018Z.csv",
+          "records": 366,
+          "sha256": "dca77bd784a5404fd14d1d904d23190ace706535ea2498cd86f1d52df39f8afe",
+          "bytes": 65772,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 2205,
+          "year": 1984
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_2205_1985_20261026T180018Z.csv",
+          "records": 365,
+          "sha256": "7f40d2739a30d110293ed76fa1e0c23083e8b14b8dd76001cbe724ef45d4f006",
+          "bytes": 65653,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 2205,
+          "year": 1985
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_2205_1986_20261026T180018Z.csv",
+          "records": 365,
+          "sha256": "e8019177a5602b439bb97f16a5d572c6baf80294159a9fed3efd372cd1bc53af",
+          "bytes": 65530,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 2205,
+          "year": 1986
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_2205_1987_20261026T180018Z.csv",
+          "records": 365,
+          "sha256": "5ec1100b6acc53f538e2255b58dec48f350df5917f1d6965869d0a926f63aba4",
+          "bytes": 65397,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 2205,
+          "year": 1987
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_2205_1988_20261026T180018Z.csv",
+          "records": 366,
+          "sha256": "0789e843a843a70111f61432fb5c08d0dabc04cb9f34595796f4b707f03fdcfa",
+          "bytes": 65700,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 2205,
+          "year": 1988
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_2205_1989_20261026T180018Z.csv",
+          "records": 365,
+          "sha256": "79e5218b6f3bb54cd06fe3979712b29f6de609e88b5cafad86b6560e18bd4435",
+          "bytes": 65552,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 2205,
+          "year": 1989
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_2205_1990_20261026T180018Z.csv",
+          "records": 365,
+          "sha256": "3ca54ca692d2260700b48cc76a3f8b5d9aec26cf2f9fab71b3f2e385c1a3dcde",
+          "bytes": 65569,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 2205,
+          "year": 1990
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_2205_1991_20261026T180018Z.csv",
+          "records": 365,
+          "sha256": "9c771db256bcd5d40c560267780c006d11f7dff368c95e176c79f3ac386ab40b",
+          "bytes": 65508,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 2205,
+          "year": 1991
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_2205_1992_20261026T180018Z.csv",
+          "records": 366,
+          "sha256": "2d194bd584c5971972b7e42fd449ddfefe0346275f47c7479ec22f3e5546a625",
+          "bytes": 65296,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 2205,
+          "year": 1992
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_2205_1993_20261026T180018Z.csv",
+          "records": 365,
+          "sha256": "6a9e7916ca435651f263a85680ac69ba51865c218ef9646db39dda7eafe0cd8a",
+          "bytes": 63632,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 2205,
+          "year": 1993
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_2205_1994_20261026T180018Z.csv",
+          "records": 365,
+          "sha256": "9a1e6ccb8a4a78d7448a45fea592159d2d2aad4e6b1e32c64c96af2e20f99383",
+          "bytes": 65546,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 2205,
+          "year": 1994
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_2205_1995_20261026T180018Z.csv",
+          "records": 365,
+          "sha256": "a7771892684977a67d736436b8a06b9681ac9e5de72638062f68680794bb9fea",
+          "bytes": 65587,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 2205,
+          "year": 1995
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_2205_1996_20261026T180018Z.csv",
+          "records": 366,
+          "sha256": "864a04752bd5403cb5eb86e9c2e838bd44067306713d701f7b9bbbafe1e53151",
+          "bytes": 65863,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 2205,
+          "year": 1996
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_2205_1997_20261026T180018Z.csv",
+          "records": 365,
+          "sha256": "81c3928a7df1c2803c2d2af698056d5018758f600eb2064dc49ab144ec3de3b4",
+          "bytes": 65545,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 2205,
+          "year": 1997
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_2205_1998_20261026T180018Z.csv",
+          "records": 365,
+          "sha256": "a4f9a08196378f3ffb1aebe5509e37aa3992b77052ef0b76b9a36aa4f63d6d7f",
+          "bytes": 65649,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 2205,
+          "year": 1998
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_2205_1999_20261026T180018Z.csv",
+          "records": 365,
+          "sha256": "0831f9b3af65ef533b642b54355efc8df2143e3cd157d11709f1cec14aca1caf",
+          "bytes": 65927,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 2205,
+          "year": 1999
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_2205_2000_20261026T180018Z.csv",
+          "records": 366,
+          "sha256": "7afa7144b347bb4af666f6687fe2938bfd0752c7f397e4880de9dfb1e4ad3a93",
+          "bytes": 66203,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 2205,
+          "year": 2000
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_2205_2001_20261026T180018Z.csv",
+          "records": 365,
+          "sha256": "46bcbe62103754ae3d093879cb81cef8095ee73f8fc479a8931219fe0ca06e5f",
+          "bytes": 65995,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 2205,
+          "year": 2001
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_2205_2002_20261026T180018Z.csv",
+          "records": 365,
+          "sha256": "c3eb813169d264f309815eb19d34268c309dc06ee723ccbfe890d9bae69a2bf0",
+          "bytes": 65926,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 2205,
+          "year": 2002
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_2205_2003_20261026T180018Z.csv",
+          "records": 365,
+          "sha256": "bda28eac1c569a90defb7d7180837e556336fcacf48f0c7b959435803d489680",
+          "bytes": 65896,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 2205,
+          "year": 2003
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_2205_2004_20261026T180018Z.csv",
+          "records": 366,
+          "sha256": "d13ceeef17ba228c092116721c906a59813d645656218b7b703a4b48bb8ee010",
+          "bytes": 66030,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 2205,
+          "year": 2004
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_2205_2005_20261026T180018Z.csv",
+          "records": 365,
+          "sha256": "4b68c3100d50bc42592031b0d9068c9b3a7366c5b133b8a779dadfeb34153c98",
+          "bytes": 65880,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 2205,
+          "year": 2005
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_2205_2006_20261026T180018Z.csv",
+          "records": 365,
+          "sha256": "de4e4391f105228e9d7167fee9d28b289c1c644d6e137c8fc4b4f7781f2aadf9",
+          "bytes": 65859,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 2205,
+          "year": 2006
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_2205_2007_20261026T180018Z.csv",
+          "records": 365,
+          "sha256": "b2032b1a6a7a01eaee3038209ff470f3c23659ddaf95dbc05cbff3fe8af4115c",
+          "bytes": 65898,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 2205,
+          "year": 2007
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_2205_2008_20261026T180018Z.csv",
+          "records": 366,
+          "sha256": "7f6c841398d0a47b11a80b43c6eadce3876ca53a3178c74d43e06b6f65f7555c",
+          "bytes": 66072,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 2205,
+          "year": 2008
+        },
+        {
+          "status": "OK",
+          "filename": "data/raw/weather/daily_weather_eccc_2205_2009_20261026T180018Z.csv",
+          "records": 365,
+          "sha256": "1456e460e34e4327a9c17ff8079006dbddf03d367d7fb6cf16066189ccaaac0c",
+          "bytes": 65926,
+          "source": "https://climate.weather.gc.ca/climate_data/bulk_data_e.html",
+          "station_id": 2205,
+          "year": 2009
+        }
+      ],
+      "combined_file": "data/raw/weather/daily_weather_calgary_1960_2009_20261026T180018Z.csv",
+      "annual_coverage": {
+        "1960": {
+          "days": 366,
+          "min_temp_days": 366,
+          "max_temp_days": 366,
+          "precip_days": 366,
+          "snow_days": 366
+        },
+        "1961": {
+          "days": 365,
+          "min_temp_days": 365,
+          "max_temp_days": 365,
+          "precip_days": 365,
+          "snow_days": 365
+        },
+        "1962": {
+          "days": 365,
+          "min_temp_days": 365,
+          "max_temp_days": 365,
+          "precip_days": 365,
+          "snow_days": 365
+        },
+        "1963": {
+          "days": 365,
+          "min_temp_days": 365,
+          "max_temp_days": 365,
+          "precip_days": 365,
+          "snow_days": 365
+        },
+        "1964": {
+          "days": 366,
+          "min_temp_days": 366,
+          "max_temp_days": 366,
+          "precip_days": 366,
+          "snow_days": 366
+        },
+        "1965": {
+          "days": 365,
+          "min_temp_days": 365,
+          "max_temp_days": 365,
+          "precip_days": 365,
+          "snow_days": 365
+        },
+        "1966": {
+          "days": 365,
+          "min_temp_days": 365,
+          "max_temp_days": 365,
+          "precip_days": 365,
+          "snow_days": 365
+        },
+        "1967": {
+          "days": 365,
+          "min_temp_days": 365,
+          "max_temp_days": 365,
+          "precip_days": 365,
+          "snow_days": 365
+        },
+        "1968": {
+          "days": 366,
+          "min_temp_days": 366,
+          "max_temp_days": 366,
+          "precip_days": 366,
+          "snow_days": 366
+        },
+        "1969": {
+          "days": 365,
+          "min_temp_days": 365,
+          "max_temp_days": 365,
+          "precip_days": 365,
+          "snow_days": 365
+        },
+        "1970": {
+          "days": 365,
+          "min_temp_days": 365,
+          "max_temp_days": 365,
+          "precip_days": 365,
+          "snow_days": 365
+        },
+        "1971": {
+          "days": 365,
+          "min_temp_days": 365,
+          "max_temp_days": 365,
+          "precip_days": 365,
+          "snow_days": 365
+        },
+        "1972": {
+          "days": 366,
+          "min_temp_days": 366,
+          "max_temp_days": 366,
+          "precip_days": 366,
+          "snow_days": 366
+        },
+        "1973": {
+          "days": 365,
+          "min_temp_days": 365,
+          "max_temp_days": 365,
+          "precip_days": 365,
+          "snow_days": 365
+        },
+        "1974": {
+          "days": 365,
+          "min_temp_days": 365,
+          "max_temp_days": 365,
+          "precip_days": 365,
+          "snow_days": 365
+        },
+        "1975": {
+          "days": 365,
+          "min_temp_days": 365,
+          "max_temp_days": 365,
+          "precip_days": 365,
+          "snow_days": 365
+        },
+        "1976": {
+          "days": 366,
+          "min_temp_days": 366,
+          "max_temp_days": 366,
+          "precip_days": 366,
+          "snow_days": 366
+        },
+        "1977": {
+          "days": 365,
+          "min_temp_days": 365,
+          "max_temp_days": 365,
+          "precip_days": 365,
+          "snow_days": 365
+        },
+        "1978": {
+          "days": 365,
+          "min_temp_days": 365,
+          "max_temp_days": 365,
+          "precip_days": 365,
+          "snow_days": 365
+        },
+        "1979": {
+          "days": 365,
+          "min_temp_days": 365,
+          "max_temp_days": 365,
+          "precip_days": 365,
+          "snow_days": 365
+        },
+        "1980": {
+          "days": 366,
+          "min_temp_days": 366,
+          "max_temp_days": 366,
+          "precip_days": 366,
+          "snow_days": 366
+        },
+        "1981": {
+          "days": 365,
+          "min_temp_days": 365,
+          "max_temp_days": 365,
+          "precip_days": 365,
+          "snow_days": 365
+        },
+        "1982": {
+          "days": 365,
+          "min_temp_days": 365,
+          "max_temp_days": 365,
+          "precip_days": 365,
+          "snow_days": 365
+        },
+        "1983": {
+          "days": 365,
+          "min_temp_days": 365,
+          "max_temp_days": 365,
+          "precip_days": 365,
+          "snow_days": 365
+        },
+        "1984": {
+          "days": 366,
+          "min_temp_days": 366,
+          "max_temp_days": 366,
+          "precip_days": 366,
+          "snow_days": 366
+        },
+        "1985": {
+          "days": 365,
+          "min_temp_days": 365,
+          "max_temp_days": 365,
+          "precip_days": 365,
+          "snow_days": 365
+        },
+        "1986": {
+          "days": 365,
+          "min_temp_days": 365,
+          "max_temp_days": 365,
+          "precip_days": 365,
+          "snow_days": 365
+        },
+        "1987": {
+          "days": 365,
+          "min_temp_days": 365,
+          "max_temp_days": 365,
+          "precip_days": 365,
+          "snow_days": 365
+        },
+        "1988": {
+          "days": 366,
+          "min_temp_days": 366,
+          "max_temp_days": 366,
+          "precip_days": 366,
+          "snow_days": 366
+        },
+        "1989": {
+          "days": 365,
+          "min_temp_days": 365,
+          "max_temp_days": 365,
+          "precip_days": 364,
+          "snow_days": 364
+        },
+        "1990": {
+          "days": 365,
+          "min_temp_days": 365,
+          "max_temp_days": 365,
+          "precip_days": 365,
+          "snow_days": 365
+        },
+        "1991": {
+          "days": 365,
+          "min_temp_days": 365,
+          "max_temp_days": 365,
+          "precip_days": 365,
+          "snow_days": 365
+        },
+        "1992": {
+          "days": 366,
+          "min_temp_days": 355,
+          "max_temp_days": 355,
+          "precip_days": 355,
+          "snow_days": 355
+        },
+        "1993": {
+          "days": 365,
+          "min_temp_days": 306,
+          "max_temp_days": 305,
+          "precip_days": 305,
+          "snow_days": 305
+        },
+        "1994": {
+          "days": 365,
+          "min_temp_days": 365,
+          "max_temp_days": 365,
+          "precip_days": 365,
+          "snow_days": 365
+        },
+        "1995": {
+          "days": 365,
+          "min_temp_days": 365,
+          "max_temp_days": 365,
+          "precip_days": 365,
+          "snow_days": 365
+        },
+        "1996": {
+          "days": 366,
+          "min_temp_days": 365,
+          "max_temp_days": 365,
+          "precip_days": 365,
+          "snow_days": 365
+        },
+        "1997": {
+          "days": 365,
+          "min_temp_days": 364,
+          "max_temp_days": 364,
+          "precip_days": 365,
+          "snow_days": 365
+        },
+        "1998": {
+          "days": 365,
+          "min_temp_days": 365,
+          "max_temp_days": 365,
+          "precip_days": 365,
+          "snow_days": 365
+        },
+        "1999": {
+          "days": 365,
+          "min_temp_days": 365,
+          "max_temp_days": 365,
+          "precip_days": 365,
+          "snow_days": 365
+        },
+        "2000": {
+          "days": 366,
+          "min_temp_days": 366,
+          "max_temp_days": 366,
+          "precip_days": 366,
+          "snow_days": 366
+        },
+        "2001": {
+          "days": 365,
+          "min_temp_days": 365,
+          "max_temp_days": 365,
+          "precip_days": 365,
+          "snow_days": 365
+        },
+        "2002": {
+          "days": 365,
+          "min_temp_days": 365,
+          "max_temp_days": 365,
+          "precip_days": 365,
+          "snow_days": 365
+        },
+        "2003": {
+          "days": 365,
+          "min_temp_days": 365,
+          "max_temp_days": 365,
+          "precip_days": 365,
+          "snow_days": 365
+        },
+        "2004": {
+          "days": 366,
+          "min_temp_days": 366,
+          "max_temp_days": 366,
+          "precip_days": 366,
+          "snow_days": 366
+        },
+        "2005": {
+          "days": 365,
+          "min_temp_days": 365,
+          "max_temp_days": 365,
+          "precip_days": 365,
+          "snow_days": 365
+        },
+        "2006": {
+          "days": 365,
+          "min_temp_days": 365,
+          "max_temp_days": 365,
+          "precip_days": 365,
+          "snow_days": 365
+        },
+        "2007": {
+          "days": 365,
+          "min_temp_days": 365,
+          "max_temp_days": 365,
+          "precip_days": 365,
+          "snow_days": 365
+        },
+        "2008": {
+          "days": 366,
+          "min_temp_days": 366,
+          "max_temp_days": 366,
+          "precip_days": 366,
+          "snow_days": 366
+        },
+        "2009": {
+          "days": 365,
+          "min_temp_days": 365,
+          "max_temp_days": 365,
+          "precip_days": 365,
+          "snow_days": 365
+        }
+      },
+      "failed_years": {},
+      "note": "Observed climate from the forecast horizon must NEVER be used as predictor"
+    }
+  },
+  "errors": {},
+  "caution": "Data collection does not certify absence of temporal leakage or future update cadence."
+}
