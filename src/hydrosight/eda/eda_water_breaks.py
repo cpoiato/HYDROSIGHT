@@ -117,6 +117,7 @@ def clean_data(df: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
 
 
 def describe_data(df: pd.DataFrame) -> None:
+    print("\n=== SAMPLE DATA ===\n", df.sample(10))
     print("\n=== NUMERICAL DESCRIPTION ===\n", df.describe())
     print("\n=== CATEGORICAL DESCRIPTION ===\n", df.describe(include=["object", "string"]))
 
