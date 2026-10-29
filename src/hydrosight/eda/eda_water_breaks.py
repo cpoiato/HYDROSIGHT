@@ -290,6 +290,24 @@ def analyse_day_one_concentration(
 
     return report, day_one_percentage
 
+def save_processed_data(df):
+    # Export cleaned water main break records
+    output_dir = ROOT_DIR / "data" / "processed"
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    output_file = output_dir / "breaks_clean.json"
+
+    df.to_json(
+        output_file,
+        orient="records",
+        date_format="iso",
+        force_ascii=False,
+        indent=2
+    )
+
+    print(f"Cleaned dataset saved: {output_file}")
+    print(f"Exported records: {len(df)}")
+
 def main() -> None:
     df = transform_data(load_data())
     validation_report = validate_data(df)
@@ -556,6 +574,8 @@ def main() -> None:
 
     generate_report(report)
     generate_eda_report(report, paths, HTML_REPORT)
+    save_processed_data(df_clean)
+
 
 if __name__ == "__main__":
     main()
