@@ -292,17 +292,19 @@ def analyse_day_one_concentration(
 
 def save_processed_data(df):
     # Export cleaned water main break records
-    output_dir = ROOT_DIR / "data" / "processed"
+    # Export cleaned water main break records as timestamped JSONL
+    output_dir = ROOT_DIR / "data" / "processed" / "water_breaks"
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    output_file = output_dir / "breaks_clean.json"
+    timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    output_file = output_dir / f"water_main_breaks_clean_{timestamp}.jsonl"
 
     df.to_json(
         output_file,
         orient="records",
+        lines=True,
         date_format="iso",
-        force_ascii=False,
-        indent=2
+        force_ascii=False
     )
 
     print(f"Cleaned dataset saved: {output_file}")
