@@ -1,0 +1,6 @@
+outs:
+- md5: 3ae031c09ba65369e037fbb487caf735.dir
+  size: 4461366
+  nfiles: 5
+  hash: md5
+  path: spatial_grid_versions

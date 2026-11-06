@@ -1,0 +1,5 @@
+outs:
+- md5: 3df43b2ddbce0dfad5d5789af0177752
+  size: 1488746
+  hash: md5
+  path: spatial_grid.geojson

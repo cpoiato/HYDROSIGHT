@@ -1,0 +1,8 @@
+{
+  "active_version": "189e648512e59325",
+  "boundary_fingerprint": "30eba86de71872b4",
+  "grid_algorithm": "clipped-positive-area-v1",
+  "grid_size_meters": 500,
+  "metric_crs": "EPSG:32611",
+  "cell_count": 3615
+}

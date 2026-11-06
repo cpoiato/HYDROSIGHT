@@ -1,0 +1,5 @@
+outs:
+- md5: ab9d27315ea1a8d6b9c5b3181d0f901c
+  size: 177933
+  hash: md5
+  path: calgary_boundary.geojson
