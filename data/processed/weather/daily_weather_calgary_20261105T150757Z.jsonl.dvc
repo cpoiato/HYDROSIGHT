@@ -1,0 +1,5 @@
+outs:
+- md5: 466b9f9aeff97364d59979908cb35a9c
+  size: 761933
+  hash: md5
+  path: daily_weather_calgary_20261105T150757Z.jsonl

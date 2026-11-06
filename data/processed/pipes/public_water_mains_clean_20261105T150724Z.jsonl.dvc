@@ -1,0 +1,5 @@
+outs:
+- md5: 0c079136a773c32730d1983a663f95ec
+  size: 24282274
+  hash: md5
+  path: public_water_mains_clean_20261105T150724Z.jsonl

@@ -1,0 +1,5 @@
+outs:
+- md5: b7143ef36ea14930b7a11805c45a148e
+  size: 414278
+  hash: md5
+  path: schools_clean_20261105T150520Z.geojson
