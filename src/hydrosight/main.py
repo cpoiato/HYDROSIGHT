@@ -25,6 +25,8 @@ from hydrosight.preprocessing.spatial_grid import (
 )
 
 
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+
 PIPELINE_FILENAMES = {
     "water_breaks": "water_breaks.jsonl",
     "pipes": "pipes.jsonl",
@@ -227,6 +229,63 @@ def run_preprocessing(args: argparse.Namespace) -> None:
         print(f"{name}: {output}")
 
 
+def run_inspection() -> None:
+    """Inspect real processed datasets and the saved spatial grid."""
+    import pandas as pd
+
+    print("=== HYDROSIGHT — DATA INSPECTION ===")
+
+    base = PROJECT_ROOT / "data" / "pipeline" / "preprocessed"
+
+    datasets = {
+        "water_breaks": base / "water_breaks.jsonl",
+        "pipes": base / "pipes.jsonl",
+        "weather": base / "weather.jsonl",
+        "hospitals": base / "hospitals.jsonl",
+        "schools": base / "schools.jsonl",
+    }
+
+    grid_path = PROJECT_ROOT / "data" / "processed" / "spatial_grid.geojson"
+
+    required_files = list(datasets.values()) + [grid_path]
+    missing = [path for path in required_files if not path.is_file()]
+
+    if missing:
+        raise FileNotFoundError(
+            "Required inspection files are missing:\n"
+            + "\n".join(str(path) for path in missing)
+        )
+
+    for name, path in datasets.items():
+        print(f"\n=== {name.upper()} ===")
+        print(f"Source: {path}")
+
+        # Schools uses newline-delimited JSON despite its .geojson extension.
+        df = pd.read_json(path, lines=True, nrows=2)
+
+        print(f"Columns: {df.columns.tolist()}")
+        print(f"Types: {df.dtypes.astype(str).to_dict()}")
+
+    print("\n=== SPATIAL GRID ===")
+    print(f"Source: {grid_path}")
+
+    grid = gpd.read_file(grid_path, rows=2)
+
+    print(f"Columns: {grid.columns.tolist()}")
+    print(f"Types: {grid.dtypes.astype(str).to_dict()}")
+    print(f"CRS: {grid.crs}")
+
+    sample_attributes = (
+        grid.drop(columns="geometry", errors="ignore")
+        .head(1)
+        .to_dict("records")
+    )
+
+    print(f"Sample attributes: {sample_attributes}")
+
+    print("\n=== DATA INSPECTION COMPLETED ===")
+
+
 def main() -> None:
     """Dispatch application commands."""
     parser = argparse.ArgumentParser(
@@ -287,12 +346,19 @@ def main() -> None:
         help="Write stable outputs for a reproducible DVC pipeline.",
     )
 
+    commands.add_parser(
+        "inspect",
+        help="Inspect processed datasets and spatial grid schemas.",
+    )
+
     args = parser.parse_args()
 
     if args.command in (None, "grid"):
         run_grid()
     elif args.command == "preprocess":
         run_preprocessing(args)
+    elif args.command == "inspect":
+        run_inspection()
 
 
 if __name__ == "__main__":
