@@ -4,7 +4,9 @@
 from __future__ import annotations
 
 import argparse
+import shutil
 from pathlib import Path
+from tempfile import TemporaryDirectory
 
 import geopandas as gpd
 
@@ -21,6 +23,15 @@ from hydrosight.preprocessing.spatial_grid import (
     load_saved_boundary,
     show_grid,
 )
+
+
+PIPELINE_FILENAMES = {
+    "water_breaks": "water_breaks.jsonl",
+    "pipes": "pipes.jsonl",
+    "weather": "weather.jsonl",
+    "hospitals": "hospitals.jsonl",
+    "schools": "schools.jsonl",
+}
 
 
 def run_grid() -> None:
@@ -144,29 +155,74 @@ def run_preprocessing(args: argparse.Namespace) -> None:
             + "\n".join(missing)
         )
 
+    def process_all(output_root: Path | None) -> dict[str, Path]:
+        """Call each canonical preprocessing implementation once."""
+
+        def output_options(name: str) -> dict[str, Path]:
+            if output_root is None:
+                return {}
+            return {"output_dir": output_root / name}
+
+        return {
+            "water_breaks": process_water_breaks(
+                args.water_breaks,
+                **output_options("water_breaks"),
+            ),
+            "pipes": process_pipes(
+                args.pipes,
+                boundary_file=args.boundary,
+                **output_options("pipes"),
+            ),
+            "weather": process_weather(
+                args.weather_historical,
+                args.weather_recent,
+                **output_options("weather"),
+            ),
+            "hospitals": process_hospitals(
+                args.hospitals,
+                boundary_file=args.boundary,
+                **output_options("hospitals"),
+            ),
+            "schools": process_schools(
+                args.schools,
+                boundary_file=args.boundary,
+                **output_options("schools"),
+            ),
+        }
+
     print("=== HYDROSIGHT — PREPROCESSING ===")
 
-    outputs = {
-        "water_breaks": process_water_breaks(args.water_breaks),
-        "pipes": process_pipes(
-            args.pipes,
-            boundary_file=args.boundary,
-        ),
-        "weather": process_weather(
-            args.weather_historical,
-            args.weather_recent,
-        ),
-        "hospitals": process_hospitals(
-            args.hospitals,
-            boundary_file=args.boundary,
-        ),
-        "schools": process_schools(
-            args.schools,
-            boundary_file=args.boundary,
-        ),
-    }
+    if args.pipeline_output_dir is None:
+        outputs = process_all(output_root=None)
+    else:
+        destination = args.pipeline_output_dir
+
+        with TemporaryDirectory(
+            prefix="hydrosight-preprocessing-"
+        ) as temporary_directory:
+            generated = process_all(
+                output_root=Path(temporary_directory)
+            )
+
+            destination.mkdir(parents=True, exist_ok=True)
+            outputs = {}
+
+            for name, source in generated.items():
+                target = destination / PIPELINE_FILENAMES[name]
+                temporary_target = target.with_name(
+                    f".{target.name}.tmp"
+                )
+
+                try:
+                    shutil.copyfile(source, temporary_target)
+                    temporary_target.replace(target)
+                finally:
+                    temporary_target.unlink(missing_ok=True)
+
+                outputs[name] = target
 
     print("=== PREPROCESSING COMPLETED ===")
+
     for name, output in outputs.items():
         print(f"{name}: {output}")
 
@@ -223,6 +279,12 @@ def main() -> None:
         "--boundary",
         type=Path,
         default=BOUNDARY_PATH,
+    )
+    preprocessing.add_argument(
+        "--pipeline-output-dir",
+        type=Path,
+        default=None,
+        help="Write stable outputs for a reproducible DVC pipeline.",
     )
 
     args = parser.parse_args()

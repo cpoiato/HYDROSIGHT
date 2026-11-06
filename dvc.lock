@@ -1,0 +1,79 @@
+schema: '2.0'
+stages:
+  preprocess:
+    cmd: PYTHONPATH=src python -m hydrosight.main preprocess --water-breaks 
+      data/raw/water_breaks/water_main_breaks_20261024T153107Z.jsonl --pipes 
+      data/raw/pipes/public_water_mains_20261024T153107Z.jsonl 
+      --weather-historical 
+      data/raw/weather/daily_weather_calgary_1960_2009_20261026T180018Z.csv 
+      --weather-recent 
+      data/raw/weather/daily_weather_calgary_2010_2026_20261024T153107Z.csv 
+      --hospitals data/raw/hospitals/hospitals_20261024T153107Z.geojson 
+      --schools data/raw/schools/schools_20261024T153107Z.geojson --boundary 
+      data/processed/calgary_boundary.geojson --pipeline-output-dir 
+      data/pipeline/preprocessed
+    deps:
+    - path: data/processed/calgary_boundary.geojson
+      hash: md5
+      md5: ab9d27315ea1a8d6b9c5b3181d0f901c
+      size: 177933
+    - path: data/raw/hospitals/hospitals_20261024T153107Z.geojson
+      hash: md5
+      md5: ca36ad8983a58f3ef9139f860b37ec53
+      size: 4078
+    - path: data/raw/pipes/public_water_mains_20261024T153107Z.jsonl
+      hash: md5
+      md5: 2eda4f681ea183a1db8225a0515ce2cc
+      size: 20636423
+    - path: data/raw/schools/schools_20261024T153107Z.geojson
+      hash: md5
+      md5: d3adc66df49f637cb8f915f0023acc38
+      size: 466699
+    - path: data/raw/water_breaks/water_main_breaks_20261024T153107Z.jsonl
+      hash: md5
+      md5: 030464fb7609d00264098f280581301d
+      size: 5321975
+    - path: 
+        data/raw/weather/daily_weather_calgary_1960_2009_20261026T180018Z.csv
+      hash: md5
+      md5: 17d0b0b4c0e562babcc418b25c085c0d
+      size: 719162
+    - path: 
+        data/raw/weather/daily_weather_calgary_2010_2026_20261024T153107Z.csv
+      hash: md5
+      md5: 92cf9bd8bd980a686fd7b980ed361966
+      size: 230958
+    - path: src/hydrosight/main.py
+      hash: md5
+      md5: abcb1ca3c6b19c16fcc25710d4ce328a
+      size: 8321
+    - path: src/hydrosight/preprocessing/hospitals.py
+      hash: md5
+      md5: d7c3bf2751da93b6418d4daabe588a82
+      size: 3270
+    - path: src/hydrosight/preprocessing/pipes.py
+      hash: md5
+      md5: e6c8c38aad486d1af59eb8ca5ce21ca1
+      size: 4044
+    - path: src/hydrosight/preprocessing/schools.py
+      hash: md5
+      md5: 5e71aea64cdf0ce7f5e2d073b679933e
+      size: 4441
+    - path: src/hydrosight/preprocessing/spatial_grid.py
+      hash: md5
+      md5: 90b62e09e9fa7400e5ca1dcecb62e92f
+      size: 8227
+    - path: src/hydrosight/preprocessing/water_breaks.py
+      hash: md5
+      md5: d0d44c24e792fe3c9d68b121dbc88194
+      size: 3307
+    - path: src/hydrosight/preprocessing/weather.py
+      hash: md5
+      md5: 92d63b00b8b5e14097f9e4616ea46895
+      size: 3973
+    outs:
+    - path: data/pipeline/preprocessed
+      hash: md5
+      md5: db622d66943e42ba4b991490336468e5.dir
+      size: 30103223
+      nfiles: 5

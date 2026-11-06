@@ -1,0 +1,32 @@
+
+stages:
+  preprocess:
+    cmd: >-
+      PYTHONPATH=src python -m hydrosight.main preprocess
+      --water-breaks data/raw/water_breaks/water_main_breaks_20261024T153107Z.jsonl
+      --pipes data/raw/pipes/public_water_mains_20261024T153107Z.jsonl
+      --weather-historical data/raw/weather/daily_weather_calgary_1960_2009_20261026T180018Z.csv
+      --weather-recent data/raw/weather/daily_weather_calgary_2010_2026_20261024T153107Z.csv
+      --hospitals data/raw/hospitals/hospitals_20261024T153107Z.geojson
+      --schools data/raw/schools/schools_20261024T153107Z.geojson
+      --boundary data/processed/calgary_boundary.geojson
+      --pipeline-output-dir data/pipeline/preprocessed
+
+    deps:
+      - src/hydrosight/main.py
+      - src/hydrosight/preprocessing/water_breaks.py
+      - src/hydrosight/preprocessing/pipes.py
+      - src/hydrosight/preprocessing/weather.py
+      - src/hydrosight/preprocessing/hospitals.py
+      - src/hydrosight/preprocessing/schools.py
+      - src/hydrosight/preprocessing/spatial_grid.py
+      - data/raw/water_breaks/water_main_breaks_20261024T153107Z.jsonl
+      - data/raw/pipes/public_water_mains_20261024T153107Z.jsonl
+      - data/raw/weather/daily_weather_calgary_1960_2009_20261026T180018Z.csv
+      - data/raw/weather/daily_weather_calgary_2010_2026_20261024T153107Z.csv
+      - data/raw/hospitals/hospitals_20261024T153107Z.geojson
+      - data/raw/schools/schools_20261024T153107Z.geojson
+      - data/processed/calgary_boundary.geojson
+
+    outs:
+      - data/pipeline/preprocessed
