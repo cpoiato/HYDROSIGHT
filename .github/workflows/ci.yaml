@@ -1,0 +1,51 @@
+
+name: HYDROSIGHT CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate:
+    name: Validate source code, tests and notebooks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install validation dependencies
+        run: python -m pip install nbformat pytest numpy pandas geopandas shapely
+
+      - name: Validate Python syntax
+        run: python -m compileall -q src/hydrosight
+
+      - name: Run unit tests
+        run: python -m pytest -q
+
+      - name: Validate EDA notebooks
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import nbformat
+
+          directory = Path("src/hydrosight/eda/notebooks")
+          notebooks = sorted(directory.glob("*.ipynb"))
+
+          if len(notebooks) != 5:
+              raise SystemExit(
+                  f"Expected 5 notebooks, found {len(notebooks)}"
+              )
+
+          for path in notebooks:
+              notebook = nbformat.read(path, as_version=4)
+              nbformat.validate(notebook)
+              print(f"PASS: {path.name}")
+
+          print("All EDA notebooks are structurally valid.")
+          PY
