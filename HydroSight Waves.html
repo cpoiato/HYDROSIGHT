@@ -1,0 +1,400 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>HydroSight Waves</title>
+<style>
+  /* Layout: one full-bleed WebGL scene. Light sits in the right 55%; the left 45% stays dark for HTML copy. */
+  :root {
+    --navy: #0B2D5C;
+    --blue: #1E88E5;
+    --light: #90CAF9;
+    --cyan: #4DD0E1;
+    --violet: #7C6CF0;
+    --ink: #030a18;
+    color-scheme: dark;
+  }
+  html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; background: var(--ink); }
+  body { background: var(--ink); }
+
+  /* Shown before the first frame, if WebGL is unavailable, and under reduced data. Same palette, no motion. */
+  #fallback {
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse 52% 30% at 72% 58%, rgba(144,202,249,.30), transparent 70%),
+      radial-gradient(ellipse 70% 38% at 68% 52%, rgba(30,136,229,.38), transparent 72%),
+      radial-gradient(ellipse 40% 30% at 94% 22%, rgba(124,108,240,.14), transparent 70%),
+      linear-gradient(180deg, #02060f 0%, #061633 55%, #0B2D5C 130%);
+  }
+  #fallback::after {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(90deg, rgba(3,10,24,.92) 0%, rgba(3,10,24,.55) 40%, transparent 70%);
+  }
+  @media (max-aspect-ratio: 9/10) {
+    #fallback::after { background: linear-gradient(180deg, rgba(3,10,24,.92) 0%, rgba(3,10,24,.5) 42%, transparent 70%); }
+  }
+
+  #scene {
+    position: fixed; inset: 0; width: 100%; height: 100%; display: block;
+    opacity: 0; transition: opacity 1.4s ease;
+  }
+  #scene.ready { opacity: 1; }
+  @media (prefers-reduced-motion: reduce) { #scene { transition: none; } }
+</style>
+
+<div id="fallback" aria-hidden="true"></div>
+<canvas id="scene" aria-hidden="true" role="presentation"></canvas>
+
+<script>
+(() => {
+  'use strict';
+
+  /* ------------------------------------------------------------------ *
+   *  Tunables
+   * ------------------------------------------------------------------ */
+  const CONFIG = {
+    loopSeconds: 32,        // one full seamless cycle
+    exposure: 1.55,         // global brightness of the particles
+    desktopDprCap: 1.75,
+    mobileDprCap: 1.5,
+    mobileDensity: 0.30,    // share of particles drawn on small / touch screens
+    desktopDensity: 0.85,   // starting share on desktop (auto-adapts down if needed)
+    parallax: 1.0,          // 0 disables the mouse response
+    stillPhase: 2.1         // frame shown when reduced motion is requested (radians)
+  };
+
+  /* Each ribbon is a thin sheet of particles that twists like silk.
+     amp / k / ph: three travelling sine terms (harmonics 1, 2, 3 of the loop, so the cycle is seamless).
+     geo: [base height, ribbon width, depth]   cr: [twist phase, twist wavenumber, twist height scale]
+     st:  [dust point size, dust alpha]                                                              */
+  const RIBBONS = [
+    { n: 110000, amp: [.55, .24, .10], k: [.85, 1.65, 2.9], ph: [0.0, 1.3, 2.4], geo: [-0.75, 2.3, -0.4], cr: [0.6, 0.62, 0.85], st: [1.5, 0.50] },
+    { n:  85000, amp: [.38, .20, .09], k: [.70, 1.45, 2.5], ph: [1.7, 0.4, 3.0], geo: [ 0.10, 1.5,  0.4], cr: [2.0, 0.90, 0.90], st: [1.6, 0.55] },
+    { n: 110000, amp: [.70, .22, .10], k: [.50, 1.15, 2.2], ph: [3.1, 2.2, 0.7], geo: [ 0.55, 2.8, -1.6], cr: [4.0, 0.45, 0.70], st: [1.4, 0.46] },
+    { n:  17000, amp: [.30, .12, .06], k: [1.1, 2.00, 3.3], ph: [0.9, 2.9, 1.1], geo: [-0.20, 0.55, 1.3], cr: [1.2, 1.10, 0.80], st: [3.0, 0.32] },
+    { n:  55000, amp: [.45, .20, .10], k: [.60, 1.30, 2.0], ph: [2.6, 0.2, 1.8], geo: [-1.25, 3.4, -2.6], cr: [5.0, 0.40, 0.60], st: [1.3, 0.30] },
+    { n:  14000, amp: [.90, .40, .20], k: [.35, 0.80, 1.4], ph: [0.3, 1.1, 2.0], geo: [ 0.00, 6.0, -0.5], cr: [0.3, 0.30, 1.00], st: [3.6, 0.09] }
+  ];
+  const GLOW_SHARE = 0.12, GLOW_SIZE = 6.0, GLOW_ALPHA = 0.18;
+
+  /* ------------------------------------------------------------------ *
+   *  Shaders
+   * ------------------------------------------------------------------ */
+  const VERT = `
+    attribute vec4 a_seed;
+    uniform float u_ph, u_ps, u_aspect;
+    uniform vec2 u_cam, u_off;
+    uniform vec3 u_amp, u_k, u_phs, u_geo, u_cr, u_style;
+    varying vec3 v_col;
+    varying float v_a;
+    const float SPAN = 15.0;
+    const float TAU = 6.28318530718;
+
+    vec3 surf(float u, float v, float ph) {
+      float x = (u - 0.5) * SPAN;
+      float y = u_geo.x
+              + u_amp.x * sin(u_k.x * x - 1.0 * ph + u_phs.x)
+              + u_amp.y * sin(u_k.y * x - 2.0 * ph + u_phs.y)
+              + u_amp.z * sin(u_k.z * x - 3.0 * ph + u_phs.z);
+      float z = u_geo.z + 0.55 * sin(u_k.x * 0.7 * x - ph + u_phs.y);
+      float th = u_cr.y * x - ph + u_cr.x;
+      float w = (v - 0.5) * u_geo.y;
+      y += w * sin(th) * u_cr.z;
+      z += w * cos(th);
+      return vec3(x, y, z);
+    }
+
+    void main() {
+      float u = a_seed.x, v = a_seed.y, r1 = a_seed.z, r2 = a_seed.w;
+      float ph = u_ph;
+
+      vec3 P  = surf(u, v, ph);
+      vec3 Pu = surf(u + 0.004, v, ph) - surf(u - 0.004, v, ph);
+      vec3 Pv = surf(u, v + 0.03, ph) - surf(u, v - 0.03, ph);
+      vec3 N  = normalize(cross(Pu, Pv));
+
+      /* thickness + slow per-particle drift (harmonics of the loop) */
+      P += N * ((r1 - 0.5) * 0.07 + 0.025 * sin(2.0 * ph + r2 * TAU));
+      P.xy += 0.02 * vec2(sin(ph + r1 * TAU), cos(ph + r2 * TAU));
+
+      /* parallax: the whole scene turns a few degrees toward the pointer */
+      float yaw = u_cam.x * 0.11, pit = u_cam.y * 0.06;
+      float cy = cos(yaw), sy = sin(yaw);
+      P.xz = vec2(cy * P.x + sy * P.z, -sy * P.x + cy * P.z);
+      float cp = cos(pit), sp = sin(pit);
+      P.yz = vec2(cp * P.y - sp * P.z, sp * P.y + cp * P.z);
+      P.xy += u_off;
+
+      vec3 V = P - vec3(u_cam.x * 0.35, 0.1 + u_cam.y * 0.2, 6.2);
+      float d = -V.z;
+
+      /* silk shading: soft key light plus a rim that follows the folds */
+      vec3 L = normalize(vec3(-0.35, 0.85, 0.5));
+      float lam = abs(dot(N, L));
+      float fr = pow(1.0 - abs(dot(N, normalize(-V))), 2.0);
+      float inten = 0.12 + 0.80 * lam * lam + 0.55 * fr;
+
+      vec3 NAVY   = vec3(0.043, 0.176, 0.361);
+      vec3 BLUE   = vec3(0.118, 0.533, 0.898);
+      vec3 LIGHT  = vec3(0.565, 0.792, 0.969);
+      vec3 CYAN   = vec3(0.302, 0.816, 0.882);
+      vec3 VIOLET = vec3(0.486, 0.424, 0.941);
+      vec3 col = mix(NAVY * 1.3, BLUE, smoothstep(0.10, 0.55, inten));
+      col = mix(col, LIGHT, smoothstep(0.55, 1.10, inten));
+      col = mix(col, CYAN, 0.22 * fr * smoothstep(0.30, 0.90, inten));
+      col = mix(col, VIOLET, 0.20 * smoothstep(-0.4, -2.6, P.z) * (1.0 - inten));
+      v_col = col;
+
+      /* depth of field */
+      float coc = min(abs(d - 6.2) * 0.8, 2.2);
+      gl_PointSize = clamp((u_style.x + coc * 2.6) * u_ps * (6.2 / d), 1.0, 64.0);
+
+      float edge  = smoothstep(0.0, 0.07, u) * smoothstep(1.0, 0.93, u);
+      float vEdge = 0.55 + 0.45 * (1.0 - pow(abs(v - 0.5) * 2.0, 3.0));
+      float tw    = 0.72 + 0.28 * sin(floor(1.0 + r1 * 3.0) * ph + r2 * TAU);
+      v_a = u_style.y * (0.3 + 0.7 * inten) * tw * edge * vEdge / (1.0 + coc * coc * 1.4);
+
+      float f = 2.63;
+      vec2 s = (u_aspect >= 1.0) ? vec2(f / u_aspect, f) : vec2(f * 0.8, f * 0.8 * u_aspect);
+      float n = 0.1, fa = 40.0;
+      gl_Position = vec4(V.x * s.x, V.y * s.y,
+                         ((fa + n) / (fa - n)) * d - (2.0 * fa * n) / (fa - n), d);
+    }`;
+
+  const FRAG = `
+    #ifdef GL_FRAGMENT_PRECISION_HIGH
+    precision highp float;
+    #else
+    precision mediump float;
+    #endif
+    varying vec3 v_col;
+    varying float v_a;
+    uniform vec2 u_res;
+    uniform float u_portrait;
+    void main() {
+      vec2 c = gl_PointCoord * 2.0 - 1.0;
+      float r2 = dot(c, c);
+      if (r2 > 1.0) discard;
+      float f = exp(-r2 * 3.0) * (1.0 - r2);
+      vec2 p = gl_FragCoord.xy / u_res;
+      /* keep the text side dark: left 45% on wide screens, top 45% on tall ones */
+      float m = mix(smoothstep(0.28, 0.72, p.x), 1.0 - smoothstep(0.42, 0.80, p.y), u_portrait);
+      float mask = mix(0.10, 1.0, m);
+      gl_FragColor = vec4(v_col * (v_a * f * mask), 1.0);
+    }`;
+
+  const BG_VERT = `
+    attribute vec2 p;
+    varying vec2 uv;
+    void main() { uv = p * 0.5 + 0.5; gl_Position = vec4(p, 0.0, 1.0); }`;
+
+  const BG_FRAG = `
+    #ifdef GL_FRAGMENT_PRECISION_HIGH
+    precision highp float;
+    #else
+    precision mediump float;
+    #endif
+    varying vec2 uv;
+    uniform vec2 u_res;
+    uniform float u_portrait, u_ph;
+    float hash(vec2 p) { return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453); }
+    void main() {
+      vec3 top = vec3(0.008, 0.020, 0.050);
+      vec3 low = vec3(0.020, 0.080, 0.180);
+      vec3 col = mix(low, top, smoothstep(0.0, 1.0, uv.y));
+      vec2 gc = mix(vec2(0.72, 0.40), vec2(0.50, 0.30), u_portrait);
+      float breathe = 1.0 + 0.06 * sin(u_ph);
+      float g = exp(-pow(length((uv - gc) * vec2(1.0, 1.7)), 2.0) * 2.6) * breathe;
+      col += vec3(0.016, 0.130, 0.290) * g;
+      col += vec3(0.060, 0.035, 0.140) * exp(-length(uv - vec2(0.95, 0.85)) * 3.0) * 0.55;
+      float side = mix(smoothstep(0.05, 0.70, uv.x), smoothstep(1.0, 0.45, uv.y), u_portrait);
+      col *= mix(0.55, 1.0, side);
+      col *= 1.0 - 0.35 * pow(length(uv - 0.5) * 1.3, 2.4);   /* vignette */
+      col += (hash(gl_FragCoord.xy) - 0.5) / 255.0;            /* dither: no banding in the dark gradient */
+      gl_FragColor = vec4(col, 1.0);
+    }`;
+
+  /* ------------------------------------------------------------------ *
+   *  Setup
+   * ------------------------------------------------------------------ */
+  const canvas = document.getElementById('scene');
+  const reduceMq = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const isSmall = () => window.matchMedia('(pointer: coarse)').matches || Math.min(innerWidth, innerHeight) < 700;
+  const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
+
+  let gl = null, bgProg, pProg, bgBuf, bgU = {}, pU = {};
+  let ribbons = [];
+  let W = 1, H = 1, dpr = 1, dprCap = isSmall() ? CONFIG.mobileDprCap : CONFIG.desktopDprCap;
+  let q = isSmall() ? CONFIG.mobileDensity : CONFIG.desktopDensity;
+  let portrait = 0, aspect = 1, ps = 1;
+  let t = 0, last = 0, raf = 0, running = false, ema = 0, frames = 0;
+  const cam = { x: 0, y: 0, tx: 0, ty: 0 };
+
+  function mulberry32(a) {
+    return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let x = Math.imul(a ^ a >>> 15, 1 | a);
+      x = x + Math.imul(x ^ x >>> 7, 61 | x) ^ x; return ((x ^ x >>> 14) >>> 0) / 4294967296; };
+  }
+
+  function compile(type, src) {
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src); gl.compileShader(s);
+    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s));
+    return s;
+  }
+  function program(vs, fs) {
+    const p = gl.createProgram();
+    gl.attachShader(p, compile(gl.VERTEX_SHADER, vs));
+    gl.attachShader(p, compile(gl.FRAGMENT_SHADER, fs));
+    gl.bindAttribLocation(p, 0, 'a_seed');
+    gl.linkProgram(p);
+    if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(p));
+    return p;
+  }
+  function locs(p, names) {
+    const o = {}; names.forEach(n => { o[n] = gl.getUniformLocation(p, n); }); return o;
+  }
+
+  function init() {
+    gl = canvas.getContext('webgl', { alpha: false, antialias: false, depth: false, stencil: false,
+                                      powerPreference: 'high-performance', preserveDrawingBuffer: false });
+    if (!gl) return false;
+    try {
+      bgProg = program(BG_VERT, BG_FRAG);
+      pProg = program(VERT, FRAG);
+    } catch (e) { console.warn('HydroSight scene disabled:', e.message); gl = null; return false; }
+
+    bgU = locs(bgProg, ['u_res', 'u_portrait', 'u_ph']);
+    pU = locs(pProg, ['u_ph', 'u_ps', 'u_aspect', 'u_cam', 'u_off', 'u_amp', 'u_k', 'u_phs', 'u_geo', 'u_cr', 'u_style', 'u_res', 'u_portrait']);
+
+    bgBuf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, bgBuf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+
+    ribbons = RIBBONS.map((r, i) => {
+      const rnd = mulberry32(7919 + i * 101);
+      const data = new Float32Array(r.n * 4);
+      for (let j = 0; j < r.n; j++) {
+        const s = rnd() * 2 - 1;                                   // cluster slightly toward the silk edges
+        data[j * 4]     = rnd();                                   // u along the flow
+        data[j * 4 + 1] = 0.5 + 0.5 * Math.sign(s) * Math.pow(Math.abs(s), 0.9);
+        data[j * 4 + 2] = rnd();
+        data[j * 4 + 3] = rnd();
+      }
+      const buf = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+      gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
+      return { cfg: r, buf };
+    });
+    resize();
+    return true;
+  }
+
+  function resize() {
+    const cw = Math.max(1, window.innerWidth), ch = Math.max(1, window.innerHeight);
+    dpr = Math.min(window.devicePixelRatio || 1, dprCap);
+    W = Math.max(1, Math.round(cw * dpr)); H = Math.max(1, Math.round(ch * dpr));
+    if (canvas.width !== W || canvas.height !== H) { canvas.width = W; canvas.height = H; }
+    aspect = cw / ch;
+    portrait = aspect < 0.9 ? 1 : 0;
+    ps = dpr * clamp(ch / 900, 0.8, 1.5);
+    if (gl && !running) render();
+  }
+
+  /* ------------------------------------------------------------------ *
+   *  Render
+   * ------------------------------------------------------------------ */
+  function render() {
+    if (!gl) return;
+    const ph = ((t / CONFIG.loopSeconds) % 1) * Math.PI * 2;
+    gl.viewport(0, 0, W, H);
+
+    gl.disable(gl.BLEND);
+    gl.useProgram(bgProg);
+    gl.uniform2f(bgU.u_res, W, H);
+    gl.uniform1f(bgU.u_portrait, portrait);
+    gl.uniform1f(bgU.u_ph, ph);
+    gl.bindBuffer(gl.ARRAY_BUFFER, bgBuf);
+    gl.enableVertexAttribArray(0);
+    gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.ONE, gl.ONE);
+    gl.useProgram(pProg);
+    gl.uniform1f(pU.u_ph, ph);
+    gl.uniform1f(pU.u_ps, ps);
+    gl.uniform1f(pU.u_aspect, aspect);
+    gl.uniform2f(pU.u_cam, cam.x * CONFIG.parallax, cam.y * CONFIG.parallax);
+    gl.uniform2f(pU.u_off, portrait ? 0.0 : 0.55, portrait ? -1.7 : -0.05);
+    gl.uniform2f(pU.u_res, W, H);
+    gl.uniform1f(pU.u_portrait, portrait);
+
+    for (const { cfg, buf } of ribbons) {
+      gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+      gl.vertexAttribPointer(0, 4, gl.FLOAT, false, 0, 0);
+      gl.uniform3fv(pU.u_amp, cfg.amp);
+      gl.uniform3fv(pU.u_k, cfg.k);
+      gl.uniform3fv(pU.u_phs, cfg.ph);
+      gl.uniform3fv(pU.u_geo, cfg.geo);
+      gl.uniform3fv(pU.u_cr, cfg.cr);
+      const count = Math.floor(cfg.n * q);
+      gl.uniform3f(pU.u_style, cfg.st[0], cfg.st[1] * CONFIG.exposure, 0);
+      gl.drawArrays(gl.POINTS, 0, count);
+      gl.uniform3f(pU.u_style, cfg.st[0] * GLOW_SIZE, GLOW_ALPHA * CONFIG.exposure, 0);
+      gl.drawArrays(gl.POINTS, 0, Math.floor(count * GLOW_SHARE));
+    }
+    canvas.classList.add('ready');
+  }
+
+  function tick(now) {
+    raf = requestAnimationFrame(tick);
+    const dt = Math.min((now - last) / 1000, 0.1);
+    last = now;
+    t += dt;
+    const k = 1 - Math.exp(-dt * 2.5);
+    cam.x += (cam.tx - cam.x) * k;
+    cam.y += (cam.ty - cam.y) * k;
+    render();
+
+    /* adaptive quality: thin the particles, then the pixel ratio, if frames run long */
+    ema = ema ? ema * 0.95 + dt * 0.05 : dt;
+    if (++frames > 90 && ema > 0.025) {
+      if (q > 0.35) q *= 0.78;
+      else if (dprCap > 1) { dprCap = Math.max(1, dprCap * 0.8); resize(); }
+      ema = 0; frames = 0;
+    }
+  }
+  function play() {
+    if (running || !gl || reduceMq.matches || document.hidden) return;
+    running = true; last = performance.now(); ema = 0; frames = 0;
+    raf = requestAnimationFrame(tick);
+  }
+  function pause() { running = false; cancelAnimationFrame(raf); }
+
+  function applyMotionPreference() {
+    pause();
+    if (reduceMq.matches) { cam.x = cam.y = cam.tx = cam.ty = 0; t = (CONFIG.stillPhase / (Math.PI * 2)) * CONFIG.loopSeconds; render(); }
+    else play();
+  }
+
+  /* ------------------------------------------------------------------ *
+   *  Events
+   * ------------------------------------------------------------------ */
+  window.addEventListener('pointermove', e => {
+    if (reduceMq.matches) return;
+    cam.tx = clamp(e.clientX / innerWidth * 2 - 1, -1, 1);
+    cam.ty = clamp(-(e.clientY / innerHeight * 2 - 1), -1, 1);
+  }, { passive: true });
+  document.addEventListener('pointerleave', () => { cam.tx = 0; cam.ty = 0; });
+  window.addEventListener('resize', () => requestAnimationFrame(resize));
+  document.addEventListener('visibilitychange', () => { document.hidden ? pause() : applyMotionPreference(); });
+  (reduceMq.addEventListener ? reduceMq.addEventListener('change', applyMotionPreference) : reduceMq.addListener(applyMotionPreference));
+
+  canvas.addEventListener('webglcontextlost', e => { e.preventDefault(); pause(); });
+  canvas.addEventListener('webglcontextrestored', () => { if (init()) applyMotionPreference(); });
+
+  if (init()) applyMotionPreference();
+
+  /* Small handle for the host page. */
+  window.hydrosightHero = { play, pause, get quality() { return q; }, set quality(v) { q = clamp(v, 0.1, 1); } };
+})();
+</script>
+
+</body></html>
