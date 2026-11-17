@@ -44,29 +44,58 @@ def load_spatial_grid() -> gpd.GeoDataFrame:
 
 def assign_breaks_to_grid(
     df_water_breaks: pd.DataFrame,
-    grid: gpd.GeoDataFrame
+    grid: gpd.GeoDataFrame,
 ) -> gpd.GeoDataFrame:
-    """Assign water main breaks to grid cells using coordinates."""
+    """Assign each real break to one 500 m sector, resolving border ties predictably."""
+    required = {"longitude", "latitude", "break_date"}
+    if not required.issubset(df_water_breaks):
+        raise ValueError(f"Water breaks missing columns: {sorted(required - set(df_water_breaks))}")
+    if "cell_id" not in grid or grid.crs is None or grid.empty:
+        raise ValueError("The sector grid must have cell_id, a CRS, and at least one cell.")
+    if grid["cell_id"].isna().any() or not grid["cell_id"].is_unique:
+        raise ValueError("Grid sector identifiers must be non-null and unique.")
+    if grid.geometry.isna().any() or not grid.geometry.is_valid.all():
+        raise ValueError("Sector grid contains missing or invalid geometry.")
 
+    records = df_water_breaks.reset_index(drop=True).copy()
+    lon = pd.to_numeric(records["longitude"], errors="coerce")
+    lat = pd.to_numeric(records["latitude"], errors="coerce")
+    if not lon.between(-180, 180).all() or not lat.between(-90, 90).all():
+        raise ValueError("Break coordinates must be valid WGS84 longitude and latitude.")
+    if pd.to_datetime(records["break_date"], errors="coerce").isna().any():
+        raise ValueError("Water break dates must be valid.")
+
+    records["_source_row"] = np.arange(len(records))
     breaks = gpd.GeoDataFrame(
-        df_water_breaks.copy(),
-        geometry=gpd.points_from_xy(
-            df_water_breaks["longitude"],
-            df_water_breaks["latitude"]
-        ),
-        crs="EPSG:4326"
-    )
+        records,
+        geometry=gpd.points_from_xy(lon, lat),
+        crs="EPSG:4326",
+    ).to_crs(grid.crs)
 
-    breaks = breaks.to_crs(grid.crs)
-
-    gdf_breaks_grid = gpd.sjoin(
-        breaks,
-        grid[["cell_id", "geometry"]],
+    # Perform the join in metres. A 1 cm tolerance prevents floating-point
+    # CRS round-trips from losing a point exactly on a shared cell boundary.
+    # Border ties are consistently resolved by the smallest stable cell ID.
+    metric_crs = "EPSG:32611"
+    candidates = gpd.sjoin(
+        breaks.to_crs(metric_crs),
+        grid[["cell_id", "geometry"]].to_crs(metric_crs),
         how="left",
-        predicate="within"
+        predicate="dwithin",
+        distance=0.01,
     )
-
-    return gdf_breaks_grid
+    candidates["candidate_cell_count"] = (
+        candidates.groupby("_source_row")["cell_id"].transform("count").astype(int)
+    )
+    assigned = (
+        candidates.sort_values(["_source_row", "cell_id"], kind="mergesort")
+        .drop_duplicates("_source_row", keep="first")
+        .sort_values("_source_row")
+        .reset_index(drop=True)
+        .drop(columns=["_source_row", "index_right"], errors="ignore")
+    )
+    if len(assigned) != len(records):
+        raise RuntimeError("Spatial assignment changed the number of source records.")
+    return assigned.to_crs(grid.crs)
 
 
 def assign_pipes_to_grid(
@@ -236,30 +265,25 @@ def aggregate_pipe_features(
     return df_features
 
 
-def aggregate_break_history(
-    gdf_breaks_grid: gpd.GeoDataFrame,
-) -> pd.DataFrame:
-    """Aggregate unique water main breaks by grid cell and month."""
-
+def aggregate_break_history(gdf_breaks_grid: gpd.GeoDataFrame) -> pd.DataFrame:
+    """Count real observed breaks by sector and calendar month (no zero imputation)."""
+    required = {"cell_id", "break_date"}
+    if not required.issubset(gdf_breaks_grid):
+        raise ValueError("Break assignments need cell_id and break_date.")
     breaks = gdf_breaks_grid.dropna(subset=["cell_id"]).copy()
-
-    breaks = breaks.reset_index(drop=True)
-    breaks["break_date"] = pd.to_datetime(breaks["break_date"])
-
-    breaks["month"] = (
-        breaks["break_date"].dt.to_period("M").dt.to_timestamp()
-    )
-
-    df_break_history = (
-        breaks.groupby(["cell_id", "month"])
+    dates = pd.to_datetime(breaks["break_date"], errors="coerce")
+    if dates.isna().any():
+        raise ValueError("Assigned breaks contain invalid dates.")
+    breaks["month"] = dates.dt.to_period("M").dt.to_timestamp()
+    return (
+        breaks.groupby(["cell_id", "month"], as_index=False)
         .size()
-        .reset_index(name="break_count")
+        .rename(columns={"size": "break_count"})
+        .sort_values(["cell_id", "month"])
+        .reset_index(drop=True)
     )
 
-    return df_break_history
 
-
-    pass
 def aggregate_weather_features():
     pass
 def aggregate_geographic_features():
