@@ -30,3 +30,21 @@ stages:
 
     outs:
       - data/pipeline/preprocessed
+
+  break_history:
+    cmd: >-
+      PYTHONPATH=src python -m hydrosight.preprocessing.break_history
+      --water-breaks data/pipeline/preprocessed/water_breaks.jsonl
+      --grid data/processed/spatial_grid.geojson
+      --grid-manifest data/processed/spatial_grid_manifest.json
+      --output-dir data/pipeline/break_history
+
+    deps:
+      - src/hydrosight/features/feature_engineering.py
+      - src/hydrosight/preprocessing/break_history.py
+      - data/pipeline/preprocessed/water_breaks.jsonl
+      - data/processed/spatial_grid.geojson
+      - data/processed/spatial_grid_manifest.json
+
+    outs:
+      - data/pipeline/break_history
