@@ -40,7 +40,6 @@ stages:
       --output-dir data/pipeline/break_history
 
     deps:
-      - src/hydrosight/features/feature_engineering.py
       - src/hydrosight/preprocessing/break_history.py
       - data/pipeline/preprocessed/water_breaks.jsonl
       - data/processed/spatial_grid.geojson
