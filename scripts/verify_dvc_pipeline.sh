@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+# Validate the committed real-data pipeline. Never download synthetic production data.
+set -euo pipefail
+
+if [[ ! -f dvc.yaml || ! -f .dvc/config ]]; then
+  echo "Run this script from the HYDROSIGHT repository root." >&2
+  exit 1
+fi
+
+# CI uses service-account credentials; local execution retains the user's OAuth setup.
+if [[ "${GITHUB_ACTIONS:-}" == "true" ]]; then
+  python - <<'PY'
+import json
+import os
+
+raw = os.environ.get("GDRIVE_CREDENTIALS_DATA", "")
+if not raw:
+    raise SystemExit("Missing GitHub secret HYDROSIGHT_GDRIVE_SERVICE_ACCOUNT_JSON")
+credentials = json.loads(raw)
+if credentials.get("type") != "service_account":
+    raise SystemExit("Google Drive credential must be a service-account JSON object")
+if not credentials.get("client_email") or not credentials.get("private_key"):
+    raise SystemExit("The Drive service-account JSON is incomplete")
+PY
+  dvc remote modify --local gdrive gdrive_use_service_account true
+fi
+
+dvc pull
+dvc repro
+PYTHONPATH=src python -m pytest -q
+
+python - <<'PY'
+import json
+from pathlib import Path
+
+manifest = json.loads(Path("data/processed/spatial_grid_manifest.json").read_text(encoding="utf-8"))
+quality = json.loads(Path("data/pipeline/break_history/break_history_quality.json").read_text(encoding="utf-8"))
+if manifest["grid_size_meters"] != 500:
+    raise SystemExit("Only the approved 500 m spatial grid can be used")
+if quality["grid_version"] != manifest["active_version"]:
+    raise SystemExit("Break history was built against a different grid version")
+if quality["grid_cells"] != manifest["cell_count"]:
+    raise SystemExit("Break history grid size does not match the active grid")
+if quality["source_records"] != quality["assigned_records"] + quality["unassigned_records"]:
+    raise SystemExit("Observed water-break counts do not reconcile")
+if not Path("data/pipeline/break_history/breaks_by_sector_month.csv").is_file():
+    raise SystemExit("Observed break history CSV was not produced")
+print("PASS: real-data DVC history and spatial-grid consistency")
+PY
+
+dvc status
+
+if [[ -n "${GITHUB_STEP_SUMMARY:-}" ]]; then
+  python - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+import json
+from pathlib import Path
+
+quality = json.loads(Path("data/pipeline/break_history/break_history_quality.json").read_text(encoding="utf-8"))
+print("### Real-data pipeline validation")
+print("\n| Metric | Value |\n|---|---:|")
+for key in ("grid_version", "grid_cells", "source_records", "assigned_records", "unassigned_records", "border_ties_resolved", "sector_month_records"):
+    print(f"| {key} | {quality[key]} |")
+print("\nDataset: official Calgary source snapshots already committed in DVC metadata. No new source extraction was performed.")
+PY
+fi
