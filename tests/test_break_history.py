@@ -9,14 +9,25 @@ import geopandas as gpd
 import pandas as pd
 from shapely.geometry import Point, box
 
-from hydrosight.features.feature_engineering import (
+from hydrosight.preprocessing.break_history import (
     aggregate_break_history,
     assign_breaks_to_grid,
+    build_and_save_break_history,
 )
-from hydrosight.preprocessing.break_history import build_and_save_break_history
 
 
 class BreakHistoryTests(unittest.TestCase):
+    def test_single_canonical_history_implementation(self):
+        """US-03 owns these functions; feature engineering only consumes them."""
+        import inspect
+        import hydrosight.features.feature_engineering as features
+        import hydrosight.preprocessing.break_history as history_module
+
+        for name in ("assign_breaks_to_grid", "aggregate_break_history"):
+            canonical = getattr(history_module, name)
+            self.assertIs(getattr(features, name), canonical)
+            self.assertEqual(inspect.getmodule(canonical), history_module)
+
     @staticmethod
     def sample_data():
         grid = gpd.GeoDataFrame(
