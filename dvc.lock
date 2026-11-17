@@ -45,8 +45,8 @@ stages:
       size: 230958
     - path: src/hydrosight/main.py
       hash: md5
-      md5: abcb1ca3c6b19c16fcc25710d4ce328a
-      size: 8321
+      md5: 6fb8bb563cb1c14dee439fa6e0ef4f58
+      size: 10270
     - path: src/hydrosight/preprocessing/hospitals.py
       hash: md5
       md5: d7c3bf2751da93b6418d4daabe588a82
@@ -77,3 +77,36 @@ stages:
       md5: db622d66943e42ba4b991490336468e5.dir
       size: 30103223
       nfiles: 5
+  break_history:
+    cmd: PYTHONPATH=src python -m hydrosight.preprocessing.break_history 
+      --water-breaks data/pipeline/preprocessed/water_breaks.jsonl --grid 
+      data/processed/spatial_grid.geojson --grid-manifest 
+      data/processed/spatial_grid_manifest.json --output-dir 
+      data/pipeline/break_history
+    deps:
+    - path: data/pipeline/preprocessed/water_breaks.jsonl
+      hash: md5
+      md5: 75565449c2f953925588bd270b572153
+      size: 4641964
+    - path: data/processed/spatial_grid.geojson
+      hash: md5
+      md5: 3df43b2ddbce0dfad5d5789af0177752
+      size: 1488746
+    - path: data/processed/spatial_grid_manifest.json
+      hash: md5
+      md5: 5ba7fc9c0b9f913cb08302fd1b88891e
+      size: 216
+    - path: src/hydrosight/features/feature_engineering.py
+      hash: md5
+      md5: b1d7a48454a46fcd774abfb3e16c6f4e
+      size: 10284
+    - path: src/hydrosight/preprocessing/break_history.py
+      hash: md5
+      md5: 37ef4c7bba0318859aaeef55207e24b9
+      size: 4365
+    outs:
+    - path: data/pipeline/break_history
+      hash: md5
+      md5: 0d0c8cec40a1fdf4423e17f6cebd44c7.dir
+      size: 1008121
+      nfiles: 2
