@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 from datetime import datetime, timezone
+from math import ceil
 from pathlib import Path
 import geopandas as gpd
 import pandas as pd
@@ -230,66 +231,48 @@ def validate_feature_dataframe():
 def save_feature_dataframe():
     pass
 
-def main():
-    grid = load_spatial_grid()
-    gdf_hospitals_grid = assign_hospitals_to_grid(load_processed_data("hospitals"),grid)
-    gdf_schools_grid = assign_schools_to_grid(load_processed_data("schools"),grid)
-    gdf_pipes_grid = assign_pipes_to_grid(load_processed_data("pipes"),grid)
-    gdf_water_breaks_grid = assign_breaks_to_grid(load_processed_data("water_breaks"),grid)
-    df_weather = load_processed_data("weather")
-    gdf_pipe_breaks = match_breaks_to_pipes(gdf_pipes_grid,gdf_water_breaks_grid)
-
+def print_pipe_match_summary(
+    gdf_pipe_breaks: gpd.GeoDataFrame,
+    original_break_count: int,
+) -> None:
     break_match_summary = gdf_pipe_breaks.drop_duplicates(subset=["break_id"])
 
     print("Match status by break:")
     print(break_match_summary["match"].value_counts())
-    print("Original breaks:", len(gdf_water_breaks_grid))
+    print("Original breaks:", original_break_count)
 
     print("Candidate distances (m):")
     print(gdf_pipe_breaks["distance_m"].describe())
 
-    df_pipe_features = aggregate_pipe_features(
-        gdf_pipes_grid,
-        grid
-    )
+
+def print_pipe_coverage_summary(
+    gdf_pipes_grid: gpd.GeoDataFrame,
+    df_pipe_features: pd.DataFrame,
+) -> None:
+    duplicate_pairs = gdf_pipes_grid.duplicated(subset=["globalid", "cell_id"]).sum()
+    total_length_m = round(df_pipe_features["pipe_length_m"].sum(), 2)
 
     print(df_pipe_features.head())
+    print("Duplicate pipe-cell pairs:", duplicate_pairs)
+    print("Total network length in grid (m):", total_length_m)
+    print("Cells containing pipes:", len(df_pipe_features))
 
-    print(
-        "Duplicate pipe-cell pairs:",
-        gdf_pipes_grid.duplicated(
-            subset=["globalid", "cell_id"]
-        ).sum()
-    )
 
-    print(
-        "Total network length in grid (m):",
-        round(df_pipe_features["pipe_length_m"].sum(), 2)
-    )
-
-    print(
-        "Cells containing pipes:",
-        len(df_pipe_features)
-    )
-
-    df_break_history = aggregate_break_history(gdf_water_breaks_grid)
+def print_break_coverage_and_recurrence(
+    df_break_history: pd.DataFrame,
+    breaks_in_period: pd.DataFrame,
+    pipe_cells: set[str],
+) -> None:
+    break_cells = set(breaks_in_period["cell_id"].dropna())
 
     print(df_break_history.head())
     print("Breaks assigned to grid:", df_break_history["break_count"].sum())
-    print("Breaks between 2016 and 2025:", df_break_history.loc[df_break_history["month"].dt.year.between(2016, 2025),"break_count"].sum())
-    df_cell_breaks =df_break_history.loc[df_break_history["month"].dt.year.between(2016, 2025),"cell_id"].copy()
-    print("Cells with breaks between 2016 and 2025:", df_cell_breaks.nunique())
-
-    pipe_cells = set(df_pipe_features["cell_id"].dropna())
-    break_cells = set(df_cell_breaks.dropna())
+    print("Breaks between 2016 and 2025:", breaks_in_period["break_count"].sum())
+    print("Cells with breaks between 2016 and 2025:", len(break_cells))
 
     print("Cells with pipes and breaks:", len(pipe_cells & break_cells))
     print("Cells with breaks but no pipes:", len(break_cells - pipe_cells))
     print("Cells with pipes but no breaks:", len(pipe_cells - break_cells))
-
-    breaks_in_period = df_break_history.loc[
-        df_break_history["month"].dt.year.between(2016, 2025)
-    ]
 
     breaks_per_cell = breaks_in_period.groupby("cell_id")["break_count"].sum()
 
@@ -298,12 +281,12 @@ def main():
     print("Sectors with two or more breaks:", breaks_per_cell.ge(2).sum())
     print("Highest break count in one sector:", breaks_per_cell.max())
 
-    from math import ceil
 
-    history = df_break_history.loc[
-        df_break_history["month"].dt.year.between(2016, 2023)
-    ]
-
+def print_historical_baseline(
+    breaks_in_period: pd.DataFrame,
+    pipe_cells: set[str],
+) -> None:
+    history = breaks_in_period.loc[breaks_in_period["month"].dt.year.le(2023)]
     historical_counts = history.groupby("cell_id")["break_count"].sum()
 
     sector_ranking = (
@@ -319,9 +302,7 @@ def main():
     print("Priority sectors:", top_sector_count)
 
     for year in (2024, 2025):
-        year_breaks = df_break_history.loc[
-            df_break_history["month"].dt.year.eq(year)
-        ]
+        year_breaks = breaks_in_period.loc[breaks_in_period["month"].dt.year.eq(year)]
         total = year_breaks["break_count"].sum()
         captured = year_breaks.loc[
             year_breaks["cell_id"].isin(priority_cells), "break_count"
@@ -329,6 +310,29 @@ def main():
 
         print(f"{year}: {captured}/{total} breaks captured ({captured / total:.1%})")
 
+
+def main() -> None:
+    grid = load_spatial_grid()
+    gdf_hospitals_grid = assign_hospitals_to_grid(load_processed_data("hospitals"), grid)
+    gdf_schools_grid = assign_schools_to_grid(load_processed_data("schools"), grid)
+    gdf_pipes_grid = assign_pipes_to_grid(load_processed_data("pipes"), grid)
+    gdf_water_breaks_grid = assign_breaks_to_grid(load_processed_data("water_breaks"), grid)
+    df_weather = load_processed_data("weather")
+
+    gdf_pipe_breaks = match_breaks_to_pipes(gdf_pipes_grid, gdf_water_breaks_grid)
+    print_pipe_match_summary(gdf_pipe_breaks, len(gdf_water_breaks_grid))
+
+    df_pipe_features = aggregate_pipe_features(gdf_pipes_grid, grid)
+    print_pipe_coverage_summary(gdf_pipes_grid, df_pipe_features)
+
+    df_break_history = aggregate_break_history(gdf_water_breaks_grid)
+    breaks_in_period = df_break_history.loc[
+        df_break_history["month"].dt.year.between(2016, 2025)
+    ]
+    pipe_cells = set(df_pipe_features["cell_id"].dropna())
+
+    print_break_coverage_and_recurrence(df_break_history, breaks_in_period, pipe_cells)
+    print_historical_baseline(breaks_in_period, pipe_cells)
 
 
 if __name__ == "__main__":
