@@ -136,6 +136,7 @@ def match_breaks_to_pipes(
     pipes = (
         gdf_pipes
         .drop(columns=["index_right"], errors="ignore")
+        .drop_duplicates(subset=["globalid"])
         .to_crs("EPSG:32611")
     )
 
@@ -238,10 +239,14 @@ def main():
     df_weather = load_processed_data("weather")
     gdf_pipe_breaks = match_breaks_to_pipes(gdf_pipes_grid,gdf_water_breaks_grid)
 
-    print(gdf_pipe_breaks["match"].value_counts())
-    print(gdf_pipe_breaks["distance_m"].describe())
+    break_match_summary = gdf_pipe_breaks.drop_duplicates(subset=["break_id"])
+
+    print("Match status by break:")
+    print(break_match_summary["match"].value_counts())
     print("Original breaks:", len(gdf_water_breaks_grid))
-    print("Unique matched break IDs:", gdf_pipe_breaks["break_id"].nunique())
+
+    print("Candidate distances (m):")
+    print(gdf_pipe_breaks["distance_m"].describe())
 
     df_pipe_features = aggregate_pipe_features(
         gdf_pipes_grid,
@@ -281,6 +286,48 @@ def main():
     print("Cells with pipes and breaks:", len(pipe_cells & break_cells))
     print("Cells with breaks but no pipes:", len(break_cells - pipe_cells))
     print("Cells with pipes but no breaks:", len(pipe_cells - break_cells))
+
+    breaks_in_period = df_break_history.loc[
+        df_break_history["month"].dt.year.between(2016, 2025)
+    ]
+
+    breaks_per_cell = breaks_in_period.groupby("cell_id")["break_count"].sum()
+
+    print("Break recurrence by sector (2016–2025):")
+    print("Sectors with exactly one break:", breaks_per_cell.eq(1).sum())
+    print("Sectors with two or more breaks:", breaks_per_cell.ge(2).sum())
+    print("Highest break count in one sector:", breaks_per_cell.max())
+
+    from math import ceil
+
+    history = df_break_history.loc[
+        df_break_history["month"].dt.year.between(2016, 2023)
+    ]
+
+    historical_counts = history.groupby("cell_id")["break_count"].sum()
+
+    sector_ranking = (
+        historical_counts
+        .reindex(pd.Index(sorted(pipe_cells), name="cell_id"), fill_value=0)
+        .reset_index()
+        .sort_values(["break_count", "cell_id"], ascending=[False, True])
+    )
+
+    top_sector_count = ceil(len(sector_ranking) * 0.10)
+    priority_cells = sector_ranking.head(top_sector_count)["cell_id"]
+
+    print("Priority sectors:", top_sector_count)
+
+    for year in (2024, 2025):
+        year_breaks = df_break_history.loc[
+            df_break_history["month"].dt.year.eq(year)
+        ]
+        total = year_breaks["break_count"].sum()
+        captured = year_breaks.loc[
+            year_breaks["cell_id"].isin(priority_cells), "break_count"
+        ].sum()
+
+        print(f"{year}: {captured}/{total} breaks captured ({captured / total:.1%})")
 
 
 
