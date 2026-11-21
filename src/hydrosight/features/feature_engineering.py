@@ -271,6 +271,18 @@ def main():
 
     print(df_break_history.head())
     print("Breaks assigned to grid:", df_break_history["break_count"].sum())
+    print("Breaks between 2016 and 2025:", df_break_history.loc[df_break_history["month"].dt.year.between(2016, 2025),"break_count"].sum())
+    df_cell_breaks =df_break_history.loc[df_break_history["month"].dt.year.between(2016, 2025),"cell_id"].copy()
+    print("Cells with breaks between 2016 and 2025:", df_cell_breaks.nunique())
+
+    pipe_cells = set(df_pipe_features["cell_id"].dropna())
+    break_cells = set(df_cell_breaks.dropna())
+
+    print("Cells with pipes and breaks:", len(pipe_cells & break_cells))
+    print("Cells with breaks but no pipes:", len(break_cells - pipe_cells))
+    print("Cells with pipes but no breaks:", len(pipe_cells - break_cells))
+
+
 
 if __name__ == "__main__":
     main()
