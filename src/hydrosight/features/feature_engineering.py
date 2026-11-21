@@ -237,12 +237,14 @@ def print_pipe_match_summary(
 ) -> None:
     break_match_summary = gdf_pipe_breaks.drop_duplicates(subset=["break_id"])
 
-    print("Match status by break:")
-    print(break_match_summary["match"].value_counts())
-    print("Original breaks:", original_break_count)
+    print("=== Breaks and the nearest pipes in the current network ===")
+    print(f"Total breaks in the full history: {original_break_count:,}")
+    print("Match status (one count per break):")
+    match_counts = break_match_summary["match"].value_counts().rename_axis(None)
+    print(match_counts.to_string())
 
-    print("Candidate distances (m):")
-    print(gdf_pipe_breaks["distance_m"].describe())
+    print("\nDistances to candidate pipes (m, one row per candidate):")
+    print(gdf_pipe_breaks["distance_m"].describe().to_string())
 
 
 def print_pipe_coverage_summary(
@@ -252,10 +254,13 @@ def print_pipe_coverage_summary(
     duplicate_pairs = gdf_pipes_grid.duplicated(subset=["globalid", "cell_id"]).sum()
     total_length_m = round(df_pipe_features["pipe_length_m"].sum(), 2)
 
-    print(df_pipe_features.head())
-    print("Duplicate pipe-cell pairs:", duplicate_pairs)
-    print("Total network length in grid (m):", total_length_m)
-    print("Cells containing pipes:", len(df_pipe_features))
+    print("\n=== Current pipe network by sector ===")
+    print(f"Sectors with pipes: {len(df_pipe_features):,}")
+    print(f"Total network length in the grid: {total_length_m:,.2f} m")
+    print(f"Duplicate pipe–sector pairs: {duplicate_pairs:,}")
+
+    print("\nSample of pipe features by sector:")
+    print(df_pipe_features.head().to_string(index=False))
 
 
 def print_break_coverage_and_recurrence(
@@ -265,21 +270,24 @@ def print_break_coverage_and_recurrence(
 ) -> None:
     break_cells = set(breaks_in_period["cell_id"].dropna())
 
-    print(df_break_history.head())
-    print("Breaks assigned to grid:", df_break_history["break_count"].sum())
-    print("Breaks between 2016 and 2025:", breaks_in_period["break_count"].sum())
-    print("Cells with breaks between 2016 and 2025:", len(break_cells))
+    print("\n=== Recorded breaks by sector ===")
+    print(f"Breaks assigned to the grid, all years: {df_break_history['break_count'].sum():,}")
+    print("\nSample of monthly break counts from the full history:")
+    print(df_break_history.head().to_string(index=False))
 
-    print("Cells with pipes and breaks:", len(pipe_cells & break_cells))
-    print("Cells with breaks but no pipes:", len(break_cells - pipe_cells))
-    print("Cells with pipes but no breaks:", len(pipe_cells - break_cells))
+    print("\nBreaks in 2016–2025 and overlap with the current pipe network:")
+    print(f"  Recorded breaks: {breaks_in_period['break_count'].sum():,}")
+    print(f"  Sectors with recorded breaks: {len(break_cells):,}")
+    print(f"  Sectors with current pipes and recorded breaks: {len(pipe_cells & break_cells):,}")
+    print(f"  Sectors with recorded breaks and no current pipes: {len(break_cells - pipe_cells):,}")
+    print(f"  Sectors with current pipes and no recorded breaks: {len(pipe_cells - break_cells):,}")
 
     breaks_per_cell = breaks_in_period.groupby("cell_id")["break_count"].sum()
 
-    print("Break recurrence by sector (2016–2025):")
-    print("Sectors with exactly one break:", breaks_per_cell.eq(1).sum())
-    print("Sectors with two or more breaks:", breaks_per_cell.ge(2).sum())
-    print("Highest break count in one sector:", breaks_per_cell.max())
+    print("\nBreak recurrence by sector (2016–2025):")
+    print(f"  Exactly one break: {breaks_per_cell.eq(1).sum():,}")
+    print(f"  Two or more breaks: {breaks_per_cell.ge(2).sum():,}")
+    print(f"  Highest break count in one sector: {breaks_per_cell.max():,}")
 
 
 def print_historical_baseline(
@@ -299,7 +307,10 @@ def print_historical_baseline(
     top_sector_count = ceil(len(sector_ranking) * 0.10)
     priority_cells = sector_ranking.head(top_sector_count)["cell_id"]
 
-    print("Priority sectors:", top_sector_count)
+    print("\n=== Historical baseline: top 10% of sectors ===")
+    print(f"Priority sectors: {top_sector_count:,} (ranked using breaks from 2016–2023)")
+    print()
+    print(f"{'Test year':<10} {'Captured breaks':>16} {'Total breaks':>13} {'Capture rate':>13}")
 
     for year in (2024, 2025):
         year_breaks = breaks_in_period.loc[breaks_in_period["month"].dt.year.eq(year)]
@@ -308,7 +319,7 @@ def print_historical_baseline(
             year_breaks["cell_id"].isin(priority_cells), "break_count"
         ].sum()
 
-        print(f"{year}: {captured}/{total} breaks captured ({captured / total:.1%})")
+        print(f"{year:<10} {captured:>16,} {total:>13,} {captured / total:>13.1%}")
 
 
 def main() -> None:
