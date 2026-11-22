@@ -47,3 +47,22 @@ stages:
 
     outs:
       - data/pipeline/break_history
+
+  spatial_relationships:
+    cmd: >-
+      PYTHONPATH=src python -m hydrosight.preprocessing.spatial_relationships
+      --pipes data/pipeline/preprocessed/pipes.jsonl
+      --breaks data/pipeline/preprocessed/water_breaks.jsonl
+      --grid data/processed/spatial_grid.geojson
+      --manifest data/processed/spatial_grid_manifest.json
+      --history-dir data/pipeline/break_history
+      --output data/pipeline/spatial_relationships/sector_summary.jsonl
+    deps:
+      - src/hydrosight/preprocessing/spatial_relationships.py
+      - data/pipeline/preprocessed/pipes.jsonl
+      - data/pipeline/preprocessed/water_breaks.jsonl
+      - data/processed/spatial_grid.geojson
+      - data/processed/spatial_grid_manifest.json
+      - data/pipeline/break_history
+    outs:
+      - data/pipeline/spatial_relationships
