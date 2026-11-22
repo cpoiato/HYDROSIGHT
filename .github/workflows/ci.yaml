@@ -37,9 +37,9 @@ jobs:
           directory = Path("src/hydrosight/eda/notebooks")
           notebooks = sorted(directory.glob("*.ipynb"))
 
-          if len(notebooks) != 5:
+          if len(notebooks) != 6:
               raise SystemExit(
-                  f"Expected 5 notebooks, found {len(notebooks)}"
+                  f"Expected 6 notebooks, found {len(notebooks)}"
               )
 
           for path in notebooks:

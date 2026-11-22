@@ -8,7 +8,6 @@ from pathlib import Path
 import geopandas as gpd
 import pandas as pd
 from shapely.geometry import shape
-import numpy as np
 
 from hydrosight.preprocessing.break_history import (
     assign_breaks_to_grid,
@@ -128,59 +127,6 @@ def assign_schools_to_grid(
     return gdf_schools_grid
 
 
-def match_breaks_to_pipes(
-    gdf_pipes: gpd.GeoDataFrame,
-    gdf_water_breaks: gpd.GeoDataFrame,
-) -> gpd.GeoDataFrame:
-    """Match water main breaks to nearby pipes using metric distances."""
-
-    pipes = (
-        gdf_pipes
-        .drop(columns=["index_right"], errors="ignore")
-        .drop_duplicates(subset=["globalid"])
-        .to_crs("EPSG:32611")
-    )
-
-    breaks = (
-        gdf_water_breaks
-        .drop(columns=["index_right"], errors="ignore")
-        .reset_index(drop=True)
-        .to_crs("EPSG:32611")
-        .copy()
-    )
-
-    breaks["break_id"] = breaks.index
-
-    gdf_pipe_breaks = gpd.sjoin_nearest(
-        breaks,
-        pipes[["globalid", "geometry"]],
-        how="left",
-        max_distance=30,
-        distance_col="distance_m",
-    )
-
-    gdf_pipe_breaks = gdf_pipe_breaks.drop(
-        columns=["index_right"],
-        errors="ignore"
-    )
-
-    gdf_pipe_breaks["match"] = np.select(
-        [
-            gdf_pipe_breaks["globalid"].isna(),
-            gdf_pipe_breaks.duplicated(
-                subset=["break_id"],
-                keep=False
-            )
-        ],
-        [
-            "Absent",
-            "Ambiguous"
-        ],
-        default="Unique"
-    )
-
-    return gdf_pipe_breaks
-
 
 def aggregate_pipe_features(
     gdf_pipes_grid: gpd.GeoDataFrame,
@@ -255,63 +201,7 @@ def validate_feature_dataframe():
 def save_feature_dataframe():
     pass
 
-def print_pipe_match_summary(
-    gdf_pipe_breaks: gpd.GeoDataFrame,
-    original_break_count: int,
-) -> None:
-    break_match_summary = gdf_pipe_breaks.drop_duplicates(subset=["break_id"])
 
-    print("=== Breaks and the nearest pipes in the current network ===")
-    print(f"Total breaks in the full history: {original_break_count:,}")
-    print("Match status (one count per break):")
-    match_counts = break_match_summary["match"].value_counts().rename_axis(None)
-    print(match_counts.to_string())
-
-    print("\nDistances to candidate pipes (m, one row per candidate):")
-    print(gdf_pipe_breaks["distance_m"].describe().to_string())
-
-
-def print_pipe_coverage_summary(
-    gdf_pipes_grid: gpd.GeoDataFrame,
-    df_pipe_features: pd.DataFrame,
-) -> None:
-    duplicate_pairs = gdf_pipes_grid.duplicated(subset=["globalid", "cell_id"]).sum()
-    total_length_m = round(df_pipe_features["pipe_length_m"].sum(), 2)
-
-    print("\n=== Current pipe network by sector ===")
-    print(f"Sectors with pipes: {len(df_pipe_features):,}")
-    print(f"Total network length in the grid: {total_length_m:,.2f} m")
-    print(f"Duplicate pipe–sector pairs: {duplicate_pairs:,}")
-
-    print("\nSample of pipe features by sector:")
-    print(df_pipe_features.head().to_string(index=False))
-
-
-def print_break_coverage_and_recurrence(
-    df_break_history: pd.DataFrame,
-    breaks_in_period: pd.DataFrame,
-    pipe_cells: set[str],
-) -> None:
-    break_cells = set(breaks_in_period["cell_id"].dropna())
-
-    print("\n=== Recorded breaks by sector ===")
-    print(f"Breaks assigned to the grid, all years: {df_break_history['break_count'].sum():,}")
-    print("\nSample of monthly break counts from the full history:")
-    print(df_break_history.head().to_string(index=False))
-
-    print("\nBreaks in 2016–2025 and overlap with the current pipe network:")
-    print(f"  Recorded breaks: {breaks_in_period['break_count'].sum():,}")
-    print(f"  Sectors with recorded breaks: {len(break_cells):,}")
-    print(f"  Sectors with current pipes and recorded breaks: {len(pipe_cells & break_cells):,}")
-    print(f"  Sectors with recorded breaks and no current pipes: {len(break_cells - pipe_cells):,}")
-    print(f"  Sectors with current pipes and no recorded breaks: {len(pipe_cells - break_cells):,}")
-
-    breaks_per_cell = breaks_in_period.groupby("cell_id")["break_count"].sum()
-
-    print("\nBreak recurrence by sector (2016–2025):")
-    print(f"  Exactly one break: {breaks_per_cell.eq(1).sum():,}")
-    print(f"  Two or more breaks: {breaks_per_cell.ge(2).sum():,}")
-    print(f"  Highest break count in one sector: {breaks_per_cell.max():,}")
 
 
 def print_historical_baseline(
@@ -354,11 +244,8 @@ def main() -> None:
     gdf_water_breaks_grid = assign_breaks_to_grid(load_processed_data("water_breaks"), grid)
     df_weather = load_processed_data("weather")
 
-    gdf_pipe_breaks = match_breaks_to_pipes(gdf_pipes_grid, gdf_water_breaks_grid)
-    print_pipe_match_summary(gdf_pipe_breaks, len(gdf_water_breaks_grid))
 
     df_pipe_features = aggregate_pipe_features(gdf_pipes_grid, grid)
-    print_pipe_coverage_summary(gdf_pipes_grid, df_pipe_features)
 
     df_break_history = aggregate_break_history(gdf_water_breaks_grid)
     breaks_in_period = df_break_history.loc[
@@ -366,7 +253,6 @@ def main() -> None:
     ]
     pipe_cells = set(df_pipe_features["cell_id"].dropna())
 
-    print_break_coverage_and_recurrence(df_break_history, breaks_in_period, pipe_cells)
     print_historical_baseline(breaks_in_period, pipe_cells)
 
     monthly_weather = aggregate_weather_features(df_weather)
