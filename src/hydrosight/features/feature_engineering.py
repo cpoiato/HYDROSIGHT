@@ -9,6 +9,7 @@ import geopandas as gpd
 import pandas as pd
 from shapely.geometry import shape
 
+from hydrosight.preprocessing.spatial_relationships import aggregate_pipe_features, assign_pipes_to_grid
 from hydrosight.preprocessing.break_history import (
     assign_breaks_to_grid,
     aggregate_break_history,
@@ -47,32 +48,6 @@ def load_spatial_grid() -> gpd.GeoDataFrame:
     return gpd.read_file(grid_path)
 
 
-def assign_pipes_to_grid(
-    df_pipes: pd.DataFrame,
-    grid: gpd.GeoDataFrame
-) -> gpd.GeoDataFrame:
-    """Assign pipes to spatial grid cells using their geometries."""
-
-    pipes = gpd.GeoDataFrame(
-        df_pipes.copy(),
-        geometry=df_pipes["multilinestring"].apply(
-            lambda value: shape(json.loads(value))
-            if isinstance(value, str)
-            else shape(value)
-        ),
-        crs="EPSG:4326"
-    )
-
-    pipes = pipes.to_crs(grid.crs)
-
-    gdf_pipes_grid = gpd.sjoin(
-        pipes,
-        grid[["cell_id", "geometry"]],
-        how="left",
-        predicate="intersects"
-    )
-
-    return gdf_pipes_grid
 
 def extract_geometry(value):
     if isinstance(value, str):
@@ -128,38 +103,6 @@ def assign_schools_to_grid(
 
 
 
-def aggregate_pipe_features(
-    gdf_pipes_grid: gpd.GeoDataFrame,
-    grid: gpd.GeoDataFrame,
-) -> pd.DataFrame:
-    """Aggregate pipe characteristics by spatial grid cell."""
-
-    pipes = gdf_pipes_grid.dropna(subset=["cell_id"]).copy()
-
-    pipes = pipes.to_crs("EPSG:32611")
-    cells = grid.to_crs("EPSG:32611")
-
-    cell_geometries = cells.set_index("cell_id")["geometry"]
-
-    pipes["pipe_length_in_cell_m"] = pipes.apply(
-        lambda row: row.geometry.intersection(
-            cell_geometries.loc[row["cell_id"]]
-        ).length,
-        axis=1,
-    )
-
-    df_features = (
-        pipes.groupby("cell_id")
-        .agg(
-            pipe_count=("globalid", "nunique"),
-            pipe_length_m=("pipe_length_in_cell_m", "sum"),
-            avg_diameter=("diam", "mean"),
-            material_count=("material", "nunique"),
-        )
-        .reset_index()
-    )
-
-    return df_features
 
 
 def aggregate_weather_features(df_weather: pd.DataFrame) -> pd.DataFrame:
