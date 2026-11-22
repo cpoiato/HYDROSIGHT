@@ -106,3 +106,43 @@ stages:
       md5: 0d0c8cec40a1fdf4423e17f6cebd44c7.dir
       size: 1008121
       nfiles: 2
+  spatial_relationships:
+    cmd: PYTHONPATH=src python -m hydrosight.preprocessing.spatial_relationships
+      --pipes data/pipeline/preprocessed/pipes.jsonl --breaks 
+      data/pipeline/preprocessed/water_breaks.jsonl --grid 
+      data/processed/spatial_grid.geojson --manifest 
+      data/processed/spatial_grid_manifest.json --history-dir 
+      data/pipeline/break_history --output 
+      data/pipeline/spatial_relationships/sector_summary.jsonl
+    deps:
+    - path: data/pipeline/break_history
+      hash: md5
+      md5: 0d0c8cec40a1fdf4423e17f6cebd44c7.dir
+      size: 1008121
+      nfiles: 2
+    - path: data/pipeline/preprocessed/pipes.jsonl
+      hash: md5
+      md5: 0c079136a773c32730d1983a663f95ec
+      size: 24282274
+    - path: data/pipeline/preprocessed/water_breaks.jsonl
+      hash: md5
+      md5: 75565449c2f953925588bd270b572153
+      size: 4641964
+    - path: data/processed/spatial_grid.geojson
+      hash: md5
+      md5: 3df43b2ddbce0dfad5d5789af0177752
+      size: 1488746
+    - path: data/processed/spatial_grid_manifest.json
+      hash: md5
+      md5: 5ba7fc9c0b9f913cb08302fd1b88891e
+      size: 216
+    - path: src/hydrosight/preprocessing/spatial_relationships.py
+      hash: md5
+      md5: d1dd11d5beb91835b499a56ebb71aa0e
+      size: 4967
+    outs:
+    - path: data/pipeline/spatial_relationships
+      hash: md5
+      md5: 02ff0c97e983b44457b1e22e01c98e71.dir
+      size: 701721
+      nfiles: 1
