@@ -216,8 +216,32 @@ def aggregate_pipe_features(
     return df_features
 
 
-def aggregate_weather_features():
-    pass
+def aggregate_weather_features(df_weather: pd.DataFrame) -> pd.DataFrame:
+    dates = pd.to_datetime(df_weather["date"])
+    weather = df_weather.loc[dates.dt.year.between(2016, 2025)].copy()
+    weather["month"] = dates.loc[weather.index].dt.to_period("M")
+
+    monthly = weather.groupby("month").agg(
+        precipitation_days=("precip_mm", "count"),
+        snowfall_days=("snow_cm", "count"),
+        precipitation_mm=("precip_mm", lambda values: values.sum(min_count=1)),
+        snowfall_cm=("snow_cm", lambda values: values.sum(min_count=1)),
+    )
+    monthly.insert(0, "calendar_days", monthly.index.days_in_month)
+    return monthly
+
+
+def print_weather_summary(monthly_weather: pd.DataFrame) -> None:
+    print("\n=== Monthly weather coverage (2016–2025) ===")
+    print("Months covered:", len(monthly_weather))
+
+    for label, column in [
+        ("Precipitation", "precipitation_days"),
+        ("Snowfall", "snowfall_days"),
+    ]:
+        missing_days = monthly_weather["calendar_days"] - monthly_weather[column]
+        print(f"{label}: {missing_days.gt(0).sum()} months with missing measurements")
+
 def aggregate_geographic_features():
     pass
 def build_temporal_features():
@@ -345,6 +369,8 @@ def main() -> None:
     print_break_coverage_and_recurrence(df_break_history, breaks_in_period, pipe_cells)
     print_historical_baseline(breaks_in_period, pipe_cells)
 
+    monthly_weather = aggregate_weather_features(df_weather)
+    print_weather_summary(monthly_weather)
 
 if __name__ == "__main__":
     main()
