@@ -109,7 +109,7 @@ def test_dvc_commands_point_to_main_without_duplicate_stage_implementations():
 
     for stage in ("break_history:", "spatial_relationships:"):
         match = re.search(
-            rf"(?ms)^  {stage}\\n(.*?)(?=^  [a-z_]+:|\\Z)",
+            rf"(?ms)^  {stage}\n(.*?)(?=^  [a-z_]+:|\Z)",
             dvc,
         )
         assert match is not None, f"Missing DVC stage: {stage}"
