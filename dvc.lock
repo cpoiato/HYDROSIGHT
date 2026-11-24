@@ -45,8 +45,8 @@ stages:
       size: 230958
     - path: src/hydrosight/main.py
       hash: md5
-      md5: 6fb8bb563cb1c14dee439fa6e0ef4f58
-      size: 10270
+      md5: 9b31e3d43396cae428549fe8bfa70d16
+      size: 12515
     - path: src/hydrosight/preprocessing/hospitals.py
       hash: md5
       md5: d7c3bf2751da93b6418d4daabe588a82
@@ -78,8 +78,8 @@ stages:
       size: 30103223
       nfiles: 5
   break_history:
-    cmd: PYTHONPATH=src python -m hydrosight.preprocessing.break_history 
-      --water-breaks data/pipeline/preprocessed/water_breaks.jsonl --grid 
+    cmd: PYTHONPATH=src python -m hydrosight.main break-history --water-breaks 
+      data/pipeline/preprocessed/water_breaks.jsonl --grid 
       data/processed/spatial_grid.geojson --grid-manifest 
       data/processed/spatial_grid_manifest.json --output-dir 
       data/pipeline/break_history
@@ -96,6 +96,10 @@ stages:
       hash: md5
       md5: 5ba7fc9c0b9f913cb08302fd1b88891e
       size: 216
+    - path: src/hydrosight/main.py
+      hash: md5
+      md5: 9b31e3d43396cae428549fe8bfa70d16
+      size: 12515
     - path: src/hydrosight/preprocessing/break_history.py
       hash: md5
       md5: 613f9fa8135e5e5b9930ce30482086da
@@ -107,8 +111,8 @@ stages:
       size: 1008121
       nfiles: 2
   spatial_relationships:
-    cmd: PYTHONPATH=src python -m hydrosight.preprocessing.spatial_relationships
-      --pipes data/pipeline/preprocessed/pipes.jsonl --breaks 
+    cmd: PYTHONPATH=src python -m hydrosight.main spatial-relationships --pipes 
+      data/pipeline/preprocessed/pipes.jsonl --breaks 
       data/pipeline/preprocessed/water_breaks.jsonl --grid 
       data/processed/spatial_grid.geojson --manifest 
       data/processed/spatial_grid_manifest.json --history-dir 
@@ -136,6 +140,10 @@ stages:
       hash: md5
       md5: 5ba7fc9c0b9f913cb08302fd1b88891e
       size: 216
+    - path: src/hydrosight/main.py
+      hash: md5
+      md5: 9b31e3d43396cae428549fe8bfa70d16
+      size: 12515
     - path: src/hydrosight/preprocessing/spatial_relationships.py
       hash: md5
       md5: d1dd11d5beb91835b499a56ebb71aa0e

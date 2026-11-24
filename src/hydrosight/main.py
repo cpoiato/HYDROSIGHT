@@ -229,6 +229,36 @@ def run_preprocessing(args: argparse.Namespace) -> None:
         print(f"{name}: {output}")
 
 
+def run_break_history(args: argparse.Namespace) -> None:
+    """Delegate to the canonical sector-level break history implementation."""
+    from hydrosight.preprocessing.break_history import build_and_save_break_history
+
+    summary = build_and_save_break_history(
+        args.water_breaks,
+        args.grid,
+        args.grid_manifest,
+        args.output_dir,
+    )
+    print("=== SECTOR BREAK HISTORY COMPLETED ===")
+    for key, value in summary.items():
+        print(f"{key}: {value}")
+
+
+def run_spatial_relationships(args: argparse.Namespace) -> None:
+    """Delegate to the canonical spatial relationship exporter."""
+    from hydrosight.preprocessing.spatial_relationships import export_sector_summary
+
+    count = export_sector_summary(
+        args.pipes,
+        args.breaks,
+        args.grid,
+        args.manifest,
+        args.history_dir,
+        args.output,
+    )
+    print(f"Saved {count:,} sectors to {args.output}")
+
+
 def run_inspection() -> None:
     """Inspect real processed datasets and the saved spatial grid."""
     import pandas as pd
@@ -346,6 +376,41 @@ def main() -> None:
         help="Write stable outputs for a reproducible DVC pipeline.",
     )
 
+    # Expose canonical DVC stages through the project entry point.
+    # Their implementations and output contracts remain in preprocessing modules.
+    from hydrosight.preprocessing import break_history as history_module
+
+    history = commands.add_parser(
+        "break-history",
+        help="Build observed breaks by sector and month.",
+    )
+    history.add_argument(
+        "--water-breaks", type=Path, default=history_module.WATER_BREAKS_PATH
+    )
+    history.add_argument(
+        "--grid", type=Path, default=history_module.GRID_PATH
+    )
+    history.add_argument(
+        "--grid-manifest", type=Path, default=history_module.GRID_MANIFEST_PATH
+    )
+    history.add_argument(
+        "--output-dir", type=Path, default=history_module.OUTPUT_DIR
+    )
+
+    relationships = commands.add_parser(
+        "spatial-relationships",
+        help="Export current pipe coverage and observed breaks by sector.",
+    )
+    for name in (
+        "--pipes",
+        "--breaks",
+        "--grid",
+        "--manifest",
+        "--history-dir",
+        "--output",
+    ):
+        relationships.add_argument(name, type=Path, required=True)
+
     commands.add_parser(
         "inspect",
         help="Inspect processed datasets and spatial grid schemas.",
@@ -359,6 +424,10 @@ def main() -> None:
         run_preprocessing(args)
     elif args.command == "inspect":
         run_inspection()
+    elif args.command == "break-history":
+        run_break_history(args)
+    elif args.command == "spatial-relationships":
+        run_spatial_relationships(args)
 
 
 if __name__ == "__main__":
