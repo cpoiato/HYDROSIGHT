@@ -7,7 +7,14 @@ if [[ ! -f dvc.yaml || ! -f .dvc/config ]]; then
   exit 1
 fi
 
-# CI uses service-account credentials; local execution retains the user's OAuth setup.
+# CI uses the existing DVC-compatible user OAuth credentials; local execution
+# uses the operator's existing DVC OAuth profile. Do not print or persist secrets.
+mode="${1:-validate}"
+if [[ "$mode" != "validate" && "$mode" != "publish" ]]; then
+  echo "Usage: bash scripts/verify_dvc_pipeline.sh [validate|publish]" >&2
+  exit 2
+fi
+
 if [[ "${GITHUB_ACTIONS:-}" == "true" ]]; then
   python - <<'PY'
 import json
@@ -15,17 +22,23 @@ import os
 
 raw = os.environ.get("GDRIVE_CREDENTIALS_DATA", "")
 if not raw:
-    raise SystemExit("Missing GitHub secret HYDROSIGHT_GDRIVE_SERVICE_ACCOUNT_JSON")
-credentials = json.loads(raw)
-if credentials.get("type") != "service_account":
-    raise SystemExit("Google Drive credential must be a service-account JSON object")
-if not credentials.get("client_email") or not credentials.get("private_key"):
-    raise SystemExit("The Drive service-account JSON is incomplete")
+    raise SystemExit("Missing GitHub secret HYDROSIGHT_GDRIVE_OAUTH_JSON")
+try:
+    credentials = json.loads(raw)
+except json.JSONDecodeError as exc:
+    raise SystemExit("Google Drive OAuth secret is not valid JSON") from exc
+if not isinstance(credentials, dict) or not all(
+    credentials.get(field) for field in ("client_id", "client_secret", "refresh_token")
+):
+    raise SystemExit("Google Drive OAuth credentials lack client_id, client_secret or refresh_token")
+if credentials.get("type") == "service_account":
+    raise SystemExit("Expected the DVC OAuth profile, not a service-account key")
 PY
-  dvc remote modify --local gdrive gdrive_use_service_account true
 fi
 
-dvc pull
+# A new pipeline stage may have no published output yet; fetch existing snapshots
+# but let DVC regenerate only genuinely missing/changed derived stages.
+dvc pull --allow-missing
 dvc repro
 PYTHONPATH=src python -m pytest -q
 
