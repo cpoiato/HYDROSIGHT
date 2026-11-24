@@ -105,9 +105,15 @@ def test_dvc_commands_point_to_main_without_duplicate_stage_implementations():
     assert "python -m hydrosight.main spatial-relationships" in dvc
     assert "python -m hydrosight.preprocessing.break_history" not in dvc
     assert "python -m hydrosight.preprocessing.spatial_relationships" not in dvc
+    import re
+
     for stage in ("break_history:", "spatial_relationships:"):
-        section = dvc.split("\n  " + stage, 1)[1].split("\n  ", 1)[0]
-        assert "      - src/hydrosight/main.py" in section
+        match = re.search(
+            rf"(?ms)^  {stage}\\n(.*?)(?=^  [a-z_]+:|\\Z)",
+            dvc,
+        )
+        assert match is not None, f"Missing DVC stage: {stage}"
+        assert "      - src/hydrosight/main.py" in match.group(1)
 
 
 def test_features_command_not_exposed_before_implementation():
