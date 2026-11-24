@@ -36,7 +36,9 @@ if credentials.get("type") == "service_account":
 PY
 fi
 
-dvc pull
+# A new pipeline stage may have no published output yet; fetch existing snapshots
+# but let DVC regenerate only genuinely missing/changed derived stages.
+dvc pull --allow-missing
 dvc repro
 PYTHONPATH=src python -m pytest -q
 
