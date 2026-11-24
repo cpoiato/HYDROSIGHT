@@ -10,6 +10,7 @@ on:
         default: validate
         options:
           - validate
+          - preview
           - publish
   # Only source changes that affect the tracked DVC pipeline trigger remote validation.
   push:
@@ -70,11 +71,12 @@ jobs:
         run: dvc status -c
 
   publish:
-    name: Reproduce selectively and propose DVC updates
+    name: Preview or propose selective DVC updates
     if: >-
-      github.ref == 'refs/heads/main' &&
-      ((github.event_name == 'push' && vars.HYDROSIGHT_DVC_ENABLED == 'true') ||
-       (github.event_name == 'workflow_dispatch' && inputs.operation == 'publish'))
+      (github.event_name == 'workflow_dispatch' && inputs.operation == 'preview') ||
+      (github.ref == 'refs/heads/main' &&
+       ((github.event_name == 'push' && vars.HYDROSIGHT_DVC_ENABLED == 'true') ||
+        (github.event_name == 'workflow_dispatch' && inputs.operation == 'publish')))
     runs-on: ubuntu-24.04
     timeout-minutes: 90
     permissions:
@@ -84,10 +86,10 @@ jobs:
       GDRIVE_CREDENTIALS_DATA: ${{ secrets.HYDROSIGHT_GDRIVE_OAUTH_JSON }}
       GH_TOKEN: ${{ github.token }}
     steps:
-      - name: Checkout the canonical main branch
+      - name: Checkout selected branch (main for real publication)
         uses: actions/checkout@v6
         with:
-          ref: main
+          ref: ${{ github.ref }}
           persist-credentials: true
 
       - name: Set up Python
@@ -115,13 +117,22 @@ jobs:
           fi
 
       - name: Publish new versioned data to the existing DVC remote
-        if: steps.dvc_changes.outputs.changed == 'true'
+        if: steps.dvc_changes.outputs.changed == 'true' && inputs.operation != 'preview'
         run: |
           dvc push
           dvc status -c
 
+      - name: Preview publication decision (read-only)
+        if: inputs.operation == 'preview'
+        run: |
+          if [[ "${{ steps.dvc_changes.outputs.changed }}" == "true" ]]; then
+            echo "PREVIEW: DVC metadata changed; real publication would require dvc push and review PR."
+          else
+            echo "PREVIEW: No changes; real publication would skip dvc push and PR."
+          fi
+
       - name: Open PR for changed DVC metadata (never auto-merge)
-        if: steps.dvc_changes.outputs.changed == 'true'
+        if: steps.dvc_changes.outputs.changed == 'true' && inputs.operation != 'preview'
         env:
           RUN_ID: ${{ github.run_id }}
           RUN_ATTEMPT: ${{ github.run_attempt }}
