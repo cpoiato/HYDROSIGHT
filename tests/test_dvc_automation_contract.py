@@ -40,7 +40,9 @@ def test_dvc_publishing_requires_changed_metadata():
     assert 'if git diff --quiet -- dvc.lock data/pipeline/.gitignore; then' in workflow
     assert 'echo "changed=false" >> "$GITHUB_OUTPUT"' in workflow
     assert 'echo "changed=true" >> "$GITHUB_OUTPUT"' in workflow
-    assert workflow.count("if: steps.dvc_changes.outputs.changed == 'true'") == 2
+    assert workflow.count("if: steps.dvc_changes.outputs.changed == 'true' && inputs.operation != 'preview'") == 2
+    assert "if: inputs.operation == 'preview'" in workflow
+    assert "PREVIEW: No changes; real publication would skip dvc push and PR." in workflow
     assert "dvc push" in workflow
     assert "gh pr create" in workflow
     assert "gh pr merge" not in workflow
