@@ -8,9 +8,9 @@ HYDROSIGHT — Prévision du risque de rupture des conduites d’eau potable à 
 
 La Ville de Calgary gère un vaste réseau de distribution d’eau potable. Les ruptures de conduites provoquent des interruptions et des interventions coûteuses. Les données publiques montrent que les ruptures n’affectent pas tous les secteurs de la même manière.
 
-Problème : les responsables de la planification ont besoin d’une information géographique et historique claire pour repérer les secteurs qui pourraient nécessiter une inspection prioritaire au cours des 12 prochains mois.
+Problème : les responsables de la planification ont besoin d’une information géographique et historique claire pour repérer les secteurs qui pourraient nécessiter une inspection prioritaire au cours des 6 prochains mois.
 
-Objectif du projet : HYDROSIGHT vise à anticiper les risques de rupture des conduites d’eau potable de Calgary en identifiant les secteurs géographiques les plus à risque au cours des 12 prochains mois. Grâce à l’intelligence artificielle et à l’analyse des données historiques, le système aidera les gestionnaires municipaux à mieux cibler les inspections préventives, à planifier des interventions de mitigation et à optimiser l’utilisation des ressources disponibles.
+Objectif du projet : HYDROSIGHT vise à anticiper les risques de rupture des conduites d’eau potable de Calgary en identifiant les secteurs géographiques les plus à risque au cours des 6 prochains mois. Grâce à l’intelligence artificielle et à l’analyse des données historiques, le système aidera les gestionnaires municipaux à mieux cibler les inspections préventives, à planifier des interventions de mitigation et à optimiser l’utilisation des ressources disponibles.
 
 ## 2. Parties prenantes et utilisateurs
 
@@ -51,7 +51,21 @@ Condition préalable : la couverture des observations et la validité des secteu
 
 ## 5. Périmètre et exclusions
 
-Périmètre du prototype : données réelles publiques de Calgary; grille fixe de 500 m × 500 m; historique des ruptures; cible binaire (au moins une rupture observée au cours des 12 mois suivants); carte interactive et consultation d’un secteur; documentation et test.
+Périmètre du prototype : données réelles publiques de Calgary; grille fixe de 500 m × 500 m; historique des ruptures; cible binaire (au moins une rupture observée au cours des 6 mois suivants); carte interactive et consultation d’un secteur; documentation et test.
+
+### Définition de la période de prévision
+
+**Unité de prévision :** une cellule géographique de 500 m × 500 m, identifiée par son secteur, et une date de référence mensuelle fixée au premier jour du mois.
+
+**Historique utilisé pour la variable temporelle :** les 12 mois calendaires précédant strictement la date de référence (ruptures enregistrées dans le secteur, sans inclure le mois de référence). Cette période historique de 12 mois ne constitue pas l’horizon prédit.
+
+**Horizon prédit :** les 6 mois calendaires à compter du mois de référence, inclusivement. La cible binaire vaut 1 si au moins une rupture est enregistrée dans le secteur pendant cette fenêtre de six mois; elle vaut 0 si aucune rupture n’est enregistrée, sous réserve de la fiabilité et de la couverture des observations.
+
+**Exemple :** à la référence du 1er janvier 2024, la variable historique sur 12 mois couvre janvier à décembre 2023, tandis que la cible de prévision sur 6 mois couvre janvier à juin 2024 inclus.
+
+**Validité temporelle :** les caractéristiques utilisées pour simuler une prédiction doivent être connues à la date de référence. Une cible ne peut être retenue pour l’évaluation que si les six mois futurs sont entièrement écoulés et que la couverture des observations a été vérifiée. L’absence d’un enregistrement de rupture ne constitue pas, à elle seule, une preuve de couverture complète.
+
+**Évaluation :** les références de prévision se succèdent chaque mois; leurs fenêtres futures de six mois peuvent se chevaucher. Les objectifs annuels de capture et les seuils existants sont conservés à titre de cibles proposées, mais leur protocole de calcul doit être fixé avant l’évaluation afin de ne pas compter plusieurs fois une même rupture.
 
 Hors périmètre : prédiction de la conduite exacte qui cassera, prévision hebdomadaire, décision automatique d’inspection, preuve de l’impact hydraulique sur un hôpital ou une école.
 
@@ -61,7 +75,7 @@ Hors périmètre : prédiction de la conduite exacte qui cassera, prévision heb
 | --- | --- | --- | --- |
 | EF-01 | Importer et conserver la provenance des observations officielles. | Must | Source, date de collecte et nombre de lignes disponibles. |
 | EF-02 | Nettoyer les données et produire l’historique des ruptures par cellule de 500 m. | Must | Contrôles qualité et affectations géographiques vérifiables. |
-| EF-03 | Construire des variables et une cible binaire sans utiliser de données futures. | Must | Tests temporels réussis; jeu de données reproductible. |
+| EF-03 | Construire des variables à partir des données disponibles avant la date de référence et une cible binaire portant sur les six mois suivants, sans fuite temporelle. | Must | Tests temporels réussis; jeu de données reproductible. |
 | EF-04 | Entraîner, évaluer et comparer un modèle aux références simples. | Must | Résultats sur validation chronologique et test séparé. |
 | EF-05 | Afficher la carte, les observations et les prévisions uniquement si validées. | Must | Sélection du secteur et affichage cohérent; absence de score fictif. |
 | EF-06 | Exporter une fiche sectorielle avec provenance et limites. | Should | PDF conforme aux données consultées. |
@@ -76,7 +90,7 @@ Hors périmètre : prédiction de la conduite exacte qui cassera, prévision heb
 | Observations météorologiques | Variables historiques (p. ex. gel/dégel), uniquement si disponibles à la date de référence. |
 | Hôpitaux et écoles | Localisation actuelle en contexte opérationnel; hors variables d’apprentissage. |
 
-Contraintes principales : sources publiques autorisées, qualité et complétude variables, géolocalisation fiable, horizon fixe de 12 mois et utilisation de données non fictives. La structure du modèle et du service web reste soumise aux validations expérimentales.
+Contraintes principales : sources publiques autorisées, qualité et complétude variables, géolocalisation fiable, horizon de prévision fixe de 6 mois et utilisation de données non fictives. La structure du modèle et du service web reste soumise aux validations expérimentales.
 
 ## 8. Risques, hypothèses et plan de validation
 
