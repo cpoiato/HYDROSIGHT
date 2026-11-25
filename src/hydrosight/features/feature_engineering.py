@@ -128,8 +128,24 @@ def print_weather_summary(monthly_weather: pd.DataFrame) -> None:
 
 def aggregate_geographic_features():
     pass
-def build_temporal_features():
-    pass
+def build_temporal_features(df_break_history: pd.DataFrame,
+    df_target:pd.DataFrame) -> pd.DataFrame:
+    first_reference = df_target["reference_date"].min()
+    last_reference = df_target["reference_date"].max()
+    start_month = first_reference - pd.DateOffset(months=12)
+    months = pd.date_range(start_month, last_reference, freq="MS")
+    cell_ids = df_target["cell_id"].unique()
+    df_cells_months = pd.MultiIndex.from_product([cell_ids, months], names=["cell_id","month"]).to_frame(index=False)
+    df_cells_months = df_cells_months.merge(df_break_history,on=["cell_id", "month"],how="left",validate="one_to_one")
+    df_cells_months = df_cells_months.sort_values(["cell_id","month"]).reset_index(drop=True)
+    df_cells_months["break_count"] = df_cells_months["break_count"].fillna(0).astype(int)
+    grouped = df_cells_months.groupby("cell_id")["break_count"]
+    df_cells_months["breaks_last_12m"] = grouped.transform(lambda s: s.shift(1).rolling(12).sum())
+    df_cells_months["breaks_last_12m"] = df_cells_months["breaks_last_12m"].fillna(0).astype(int)
+    df_cells_months = df_cells_months.rename(columns={"month": "reference_date"})
+    df_cells_months = df_cells_months.merge(df_target, on=["cell_id", "reference_date"], how="inner", validate="one_to_one")
+    df_cells_months = df_cells_months.loc[df_cells_months["reference_date"] >= first_reference,["cell_id", "reference_date", "breaks_last_12m"]].copy()
+    return df_cells_months
 
 
 def build_target_variable(
@@ -445,5 +461,19 @@ def main() -> None:
     print("Observations:", len(df_target_model))
     print(df_target_model["target_6m"].value_counts())
 
+    df_temporal_features = build_temporal_features(df_break_history,df_target)
+    print("Temporal feature last 12 month - Total rows:", len(df_temporal_features))
+
+    print(
+        "Duplicates:",
+        df_temporal_features.duplicated(
+            ["cell_id", "reference_date"]
+        ).sum()
+    )
+
+    print(
+        "Missing values:",
+        df_temporal_features["breaks_last_12m"].isna().sum()
+    )
 if __name__ == "__main__":
     main()
