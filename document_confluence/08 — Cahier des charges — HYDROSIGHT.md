@@ -99,3 +99,23 @@ Contraintes principales : sources publiques autorisées, qualité et complétude
 | Les mois sans rupture enregistrée représentent-ils réellement des mois couverts, avec zéro rupture? | Examiner la continuité temporelle, la couverture des secteurs et les conditions de construction des exemples négatifs; ne pas assimiler automatiquement absence de ligne et zéro rupture. |
 | Le climat contient-il des lacunes ou des valeurs interpolées à partir du futur? | Contrôler les dates des données utilisées |
 | Les sources reçoivent-elles réellement de nouveaux événements? | Comparer au moins deux extractions datées et leurs enregistrements. |
+
+## 9. Licences, attribution et conditions de réutilisation des données
+
+Le code source HYDROSIGHT est distribué sous licence MIT. Cette licence ne s'applique pas automatiquement aux jeux de données externes téléchargés, ni aux extractions ou aux fichiers dérivés contenant des données de tiers. Les conditions propres à chaque fournisseur doivent être respectées.
+
+| **Données utilisées** | **Licence ou convention applicable** | **Obligations principales** |
+| --- | --- | --- |
+| Ruptures de conduites et inventaire des conduites de Calgary | Open Government Licence – City of Calgary | Réutilisation et usages commerciaux autorisés dans les limites de la licence; attribution de la Ville, exclusions de droits tiers et absence de cautionnement officiel. |
+| Hôpitaux, écoles et limite municipale de Calgary (services ArcGIS) | Conditions des données ouvertes de Calgary signalées par les services | Indiquer la provenance, vérifier les mentions spécifiques des services et ne pas suggérer l'approbation de la Ville. |
+| Observations météorologiques historiques ECCC (stations 2205 et 50430) | Convention d'utilisation des données des archives climatiques d'ECCC | Créditer ECCC et respecter les dispositions propres à la redistribution, notamment l'information et l'acceptation des conditions par les destinataires. La facturation spécifique des données source est restreinte. |
+
+**Attribution recommandée pour les données municipales :** « Contains information licensed under the Open Government Licence – City of Calgary », avec un lien vers la licence.
+
+**Attribution recommandée pour la météo :** « Données provenant d'Environnement et Changement climatique Canada (ECCC) », avec la source et la date de collecte.
+
+**Exigences :** conserver pour chaque capture l'organisme fournisseur, l'URL, la date de collecte et les références de licence; afficher les crédits appropriés dans l'application et dans les exports. Ne pas considérer le dépôt GitHub ou le stockage DVC comme une autorisation de redistribution des données tierces. Les tuiles cartographiques ou fonds de carte ajoutés ultérieurement nécessitent leur propre vérification.
+
+**Points de vigilance :** l'usage académique et l'entraînement interne du modèle sont compatibles en principe avec les conditions examinées. Avant toute mise à disposition publique de données météorologiques brutes, de jeux dérivés réidentifiables ou de fichiers téléchargeables, vérifier la convention ECCC et, au besoin, demander une autorisation ou une clarification. Un service commercial qui ne diffuse que des prédictions doit tout de même être évalué selon les données effectivement redistribuées. Aucune approbation officielle de la Ville de Calgary ou d'ECCC n'est présumée.
+
+**Références officielles :** [Licence ouverte de Calgary](https://data.calgary.ca/stories/s/u45n-7awa/); [Convention des archives climatiques ECCC](https://climate.weather.gc.ca/prods_servs/attachment1_f.html). Registre détaillé : [Data licences — HYDROSIGHT](https://github.com/cpoiato/HYDROSIGHT/blob/main/docs/DATA_LICENSES.md).
