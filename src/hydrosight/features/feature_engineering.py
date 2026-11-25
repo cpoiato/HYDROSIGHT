@@ -24,11 +24,6 @@ WEATHER_DIR = OUTPUT_DIR / "weather"
 HOSPITALS_DIR = OUTPUT_DIR / "hospitals"
 SCHOOLS_DIR = OUTPUT_DIR / "schools"
 
-
-
-
-PROJECT_ROOT = Path(__file__).resolve().parents[3]
-OUTPUT_DIR = PROJECT_ROOT / "data" / "processed"
 PIPELINE_DIR = PROJECT_ROOT / "data" / "pipeline" / "preprocessed"
 
 
@@ -165,28 +160,6 @@ def build_target_variable(
     if horizon_months < 1:
         raise ValueError("Prediction horizon must be positive.")
 
-    # Load acquisition metadata
-    manifest_path = (
-        PROJECT_ROOT
-        / "reports"
-        / "latest_download_manifest.json"
-    )
-
-    with manifest_path.open(encoding="utf-8") as file:
-        manifest = json.load(file)
-
-    source = manifest["sources"]["water_breaks"]
-
-    if source["status"] != "OK":
-        raise ValueError("Water break acquisition was unsuccessful.")
-
-    # Get the last fully elapsed month at acquisition time
-    acquisition_month = (
-        pd.to_datetime(manifest["run_utc"], utc=True)
-        .tz_localize(None)
-        .to_period("M")
-    )
-
     # Prepare the canonical break history
     history = df_break_history[
         ["cell_id", "month", "break_count"]
@@ -219,14 +192,8 @@ def build_target_variable(
 
     history["break_count"] = history["break_count"].astype("int64")
 
-    last_observed_month = history["month"].max().to_period("M")
-
-    # Estimate a conservative cutoff from available evidence
-    # This is a provisional cutoff, not certified source coverage.
-    observation_end = min(
-        acquisition_month - 1,
-        last_observed_month - 1,
-    )
+    # The observation cutoff is provisional, not certified source coverage.
+    observation_end = calculate_last_available_month(history)
 
     # Calculate the last reference month with a full future horizon
     last_reference_month = (
@@ -483,21 +450,6 @@ def main() -> None:
     )
 
     print(summary)
-
-   # Load existing DVC spatial relationships
-    df_sectors = pd.read_json(
-        PROJECT_ROOT
-        / "data/pipeline/spatial_relationships/sector_summary.jsonl",
-        lines=True,
-    )
-
-    # Identify sectors containing water mains
-    pipe_sector_ids = set(
-        df_sectors.loc[
-            df_sectors["pipe_length_m"] > 0,
-            "cell_id",
-        ]
-    )
 
     # Select model targets for sectors with water infrastructure
     df_target_model = df_target.loc[
